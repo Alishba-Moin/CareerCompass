@@ -1,187 +1,128 @@
-# CareerCompass
+# CareerCompass — Multi-Agent AI Career Orchestration Platform
 
-CareerCompass is an AI-powered, multi-agent career guidance and roadmap generation system tailored for Pakistani technology graduates and students. Rather than relying on a single, ungrounded Large Language Model response, the platform utilizes a deterministic pipeline of six specialized sub-agents working in orchestration to evaluate student skills, analyze job market signals, generate structured action plans, and track progress over time.
-
----
-
-## Features
-
-* **Multi-Agent Orchestration**: Transparent execution stream demonstrating step-by-step collaboration across six dedicated agents.
-* **Deterministic Skill Assessment**: Case-insensitive matrix evaluation that identifies student strengths and missing technical gaps against specific role targets.
-* **Localized Market Intelligence**: Real-time evaluation of local versus remote job market demand percentages, growth trends, and hiring hubs within Pakistan.
-* **Dynamic 4-Week Roadmaps**: Tailored action plans featuring four weekly tasks and a concrete portfolio project specification.
-* **Interactive Progress Tracking**: Dynamic Career Readiness Score calculation based on skill match ratio, remote demand, and task completion metrics.
-* **Multi-Student Profiles**: Built-in support to switch between different student profiles and update profile metrics dynamically via an interactive modal dialog.
-* **Dual-Language Interface**: Support for both professional English and Roman Urdu via a global navigation toggle.
+CareerCompass is an AI-driven career guidance system designed to provide personalized, market-aligned career roadmaps for students. Powered by a deterministic six-agent pipeline, the platform analyzes individual skill matrices, compares them against real-time industry demand signals, evaluates candidate readiness, and builds personalized four-week execution plans.
 
 ---
 
-## System Architecture
+## Key Architecture & Feature Highlights
 
-The application bypasses monolithic prompting by delegating tasks to distinct backend modules:
-
-
-```
-
-```
-              [ Student Query / Profile ]
-                           │
-                           ▼
-           [ Career Coach Orchestrator ]
-                           │
-   ┌───────────────────────┼───────────────────────┐
-   ▼                       ▼                       ▼
-
-```
-
-[ Skill Assessment ]  [ Market Intelligence ]   [ Career Path ]
-│                       │                       │
-└───────────────────────┼───────────────────────┘
-▼
-[ Roadmap Generator ]
-│
-▼
-[ Progress Tracker ]
-│
-▼
-[ Unified Dashboard UI ]
-
-```
-
-### Agent Responsibilities
-
-1. **Skill Assessment Agent**: Evaluates student skills against target role matrices to compute match percentages, strengths, and skill gaps.
-2. **Market Intelligence Agent**: Queries local and remote demand metrics, salary bands, and hiring trends for Pakistani tech regions.
-3. **Career Path Agent**: Evaluates student education levels and interests using a weighted scoring algorithm to recommend optimal tracks.
-4. **Roadmap Generator Agent**: Generates a 4-week task schedule and portfolio project tailored to specific skill gaps.
-5. **Progress Tracker Agent**: Persists task state changes and dynamically updates the overall Career Readiness Score.
-6. **Career Coach Orchestrator**: Manages execution flow across all sub-agents, logs execution timestamps, and produces synthesized guidance.
+* **Six-Agent Deterministic Pipeline**: Rather than relying on single ungrounded LLM prompts, the platform delegates specialized operations across six autonomous agents with transparent execution logging.
+* **Real-Time Agent Command Center**: Visualizes the active step-by-step pipeline execution stream using dynamic status badges (`IDLE` to `EXECUTING` to `COMPLETE`), animated pulse indicators, and detailed output summaries.
+* **Dynamic Career Readiness Engine**: Calculates candidate readiness dynamically using a deterministic scoring formula combining skill match percentages, remote market demand, and plan task completion rates.
+* **Warm Luxury Design System**: Tailored educational layout using an off-white/cream background (`#FDFBF7`), deep espresso typography (`#2C221E`), champagne gold accents (`#D4AF37`), micro-shadows, and glassmorphic card elements.
+* **Multi-Student Switcher & Profile Management**: Switch between seeded profiles seamlessly or modify existing credentials via an interactive modal with immediate SQLite persistence.
+* **Full Localization (i18n)**: Native bilingual support for English and Urdu with Right-to-Left (RTL) layout adjustments and persistent language selection.
 
 ---
 
-## Technical Stack
+## Multi-Agent System Architecture
 
-* **Backend**: Node.js, Express.js
-* **Database**: SQLite (`sql.js` WebAssembly / `better-sqlite3`)
-* **Frontend**: HTML5, Vanilla JavaScript, Tailwind CSS CDN
-* **Testing**: Node.js Native Test Runner
+```text
+                        [ User Career Query ]
+                                  │
+                                  ▼
+                ┌──────────────────────────────────┐
+                │    Career Coach Orchestrator     │
+                └─────────────────┬────────────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        │                         │                         │
+        ▼                         ▼                         ▼
+┌───────────────┐         ┌───────────────┐         ┌───────────────┐
+│     Skill     │         │    Market     │         │  Career Path  │
+│  Assessment   │         │ Intelligence  │         │   Selector    │
+└───────┬───────┘         └───────┬───────┘         └───────┬───────┘
+        │                         │                         │
+        └─────────────────────────┼─────────────────────────┘
+                                  │
+                                  ▼
+                ┌──────────────────────────────────┐
+                │     Roadmap Generator Agent      │
+                └─────────────────┬────────────────┘
+                                  │
+                                  ▼
+                ┌──────────────────────────────────┐
+                │      Progress Tracker Agent      │
+                └─────────────────┬────────────────┘
+                                  │
+                                  ▼
+                    [ Unified Response Payload ]
+
+### Agent Roles
+
+1. **Skill Assessment Agent** (`agents/skillAssessmentAgent.js`): Evaluates candidate skill arrays against target role requirements using normalized set operations to identify matched strengths and critical gaps.
+2. **Market Intelligence Agent** (`agents/marketIntelligenceAgent.js`): Queries local and remote demand metrics, identifying high-growth domains, salary benchmarks, and hiring hubs within the region.
+3. **Career Path Agent** (`agents/careerPathAgent.js`): Evaluates academic background (Intermediate vs. Graduate) alongside target preferences to select optimal career tracks.
+4. **Roadmap Generator Agent** (`agents/roadmapGeneratorAgent.js`): Synthesizes identified gaps into a structured four-week action plan (4 tasks per week) paired with a tailored portfolio project specification.
+5. **Progress Tracker Agent** (`agents/progressTrackerAgent.js`): Re-evaluates readiness scores upon task toggle events and updates persistent log records.
+6. **Career Coach Orchestrator** (`agents/careerCoachOrchestrator.js`): Manages end-to-end agent execution sequence, logs execution timestamps, and synthesizes structured recommendations.
 
 ---
 
-## Mathematical Models & Formulas
+## Career Readiness Score Engine
 
-### Career Readiness Score
+The readiness score is computed deterministically using the following formula:
 
-$$ \text{Readiness Score} = \min\left(100, \text{Round}\left((\text{Skill Match Ratio} \times 50) + (\text{Remote Demand Ratio} \times 30) + (\text{Completed Task Ratio} \times 20)\right)\right) $$
+$$\text{Readiness Score} = \min\left(100, \text{Round}\left(\text{SkillMatchPct} \times 0.50 + \text{RemoteDemandPct} \times 0.30 + \text{CompletedTasksRatio} \times 20\right)\right)$$
 
-* **Skill Alignment**: Up to 50 points based on target role coverage.
-* **Market Demand**: Up to 30 points based on remote job opportunity index.
-* **Plan Completion**: Up to 20 points based on completed roadmap tasks.
+### Scoring Distribution
+
+| Scoring Factor | Evaluation Basis | Maximum Point Allocation |
+| :--- | :--- | :--- |
+| **Skill Alignment** | Direct match ratio against target role skill matrix | 50 Points |
+| **Market Alignment** | Regional remote market demand indicator | 30 Points |
+| **Plan Execution** | Completed tasks / Total tasks ratio (16 tasks total) | 20 Points |
+| **Total Target Score** | **Weighted Composite Value** | **100 Points** |
 
 ---
 
-## Directory Structure
+## Tech Stack & Dependencies
 
+### Backend Layer
+* **Runtime**: Node.js (v18+)
+* **Framework**: Express.js
+* **Database**: SQLite via `sql.js` (WebAssembly)
+* **Configuration**: `dotenv`, `cors`
 
-```
+### Frontend Layer
+* **Framework**: React 18 / Next.js (App Router)
+* **Styling**: Tailwind CSS (Custom Color Extension)
+* **Animation Engine**: Framer Motion
+* **Iconography**: Lucide React
+* **Internationalization**: Custom Dictionary-based i18n Hook (English / Urdu RTL)
 
+---
 CareerCompass/
-├── server.js                        # Express server entry point
-├── package.json                     # Project dependencies and scripts
-├── .env                             # Environment configuration
-├── database/
-│   ├── db.js                        # SQLite connection wrapper and schemas
-│   └── seed.js                      # Database population script
-├── routes/
-│   └── api.js                       # Express REST endpoints
 ├── agents/
-│   ├── skillAssessmentAgent.js      # Skill matching module
-├── marketIntelligenceAgent.js   # Job market analytics module
-├── careerPathAgent.js           # Career path selection module
-├── roadmapGeneratorAgent.js     # Action plan generation module
-├── progressTrackerAgent.js      # Task tracking and scoring module
-└── careerCoachOrchestrator.js   # Pipeline orchestrator
-├── public/
-│   └── index.html                   # Dashboard UI
-└── tests/                           # Unit and orchestration test suites
-
-```
-
----
-
-## API Endpoints
-
-### Student Profile
-* **GET** `/api/students/:id`
-  * Returns student details, current skills, progress statistics, and baseline readiness scores.
-* **PUT** `/api/students/:id`
-  * Updates existing student fields (name, skills, education, interests) and returns refreshed profile data.
-
-### Analysis & Orchestration
-* **POST** `/api/coach/analyze`
-  * Accepts `{ studentId, query, language }`.
-  * Executes the full 6-agent pipeline and returns unified JSON containing market metrics, skill gaps, roadmaps, and execution logs.
-
-### Task Management
-* **POST** `/api/progress/toggle`
-  * Accepts `{ studentId, taskId, status }`.
-  * Updates database logs and returns recalculated readiness scores and task completion metrics.
-
----
-
-## Installation & Setup
-
-### Prerequisites
-
-* Node.js (v18.0.0 or higher)
-* npm (v9.0.0 or higher)
-
-### Setup Steps
-
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/your-username/CareerCompass.git](https://github.com/your-username/CareerCompass.git)
-   cd CareerCompass
-
-```
-
-2. Install dependencies:
-```bash
-npm install
-
-```
-
-
-3. Initialize and seed the database:
-```bash
-npm run seed
-
-```
-
-
-4. Start the application server:
-```bash
-npm start
-
-```
-
-
-5. Access the dashboard:
-Open browser at `http://localhost:3000`
-
----
-
-## Testing
-
-Run the full test suite covering individual agent modules and end-to-end orchestration pipelines:
-
-```bash
-npm test
-
-```
-
----
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+│   ├── skillAssessmentAgent.js       # Logic for matching student skills to role requirements
+│   ├── marketIntelligenceAgent.js    # Logic for analyzing local and remote market signals
+│   ├── careerPathAgent.js            # Logic for evaluating optimal education-to-career tracks
+│   ├── roadmapGeneratorAgent.js      # Logic for building structured 4-week action plans
+│   ├── progressTrackerAgent.js       # Logic for dynamic readiness score recalculation
+│   └── careerCoachOrchestrator.js    # Master pipeline manager for agent synchronization
+├── database/
+│   ├── db.js                         # SQLite initialization and WASM connector
+│   └── seed.js                       # Data seeding script for student and market records
+├── routes/
+│   ├── api.js                        # Primary REST API routes for dashboard interaction
+│   └── health.js                     # System status and database connectivity endpoint
+├── src/
+│   ├── components/
+│   │   ├── Navbar.jsx                # Navigation, student switcher, and language controls
+│   │   ├── AgentCommandCenter.jsx    # Real-time multi-agent execution visualizer
+│   │   ├── ReadinessScoreCard.jsx    # Component for animated readiness score gauges
+│   │   ├── SkillAnalysisCard.jsx     # Comparative matrix for strengths and gaps
+│   │   ├── MarketInsightsCard.jsx    # Visualization for local vs. remote job demand
+│   │   ├── ActionPlanSection.jsx     # Interactive 4-week task checklist
+│   │   ├── PortfolioProjectCard.jsx  # Highlight section for recommended project builds
+│   │   └── EditProfileModal.jsx      # Dialog for modifying student records in real-time
+│   ├── i18n/
+│   │   ├── dictionaries.js           # Localization strings for English and Urdu
+│   │   └── LanguageContext.jsx       # Global state manager for locale and RTL alignment
+│   ├── styles/
+│   │   └── globals.css               # Tailwind directives and custom luxury theme tokens
+│   └── page.jsx                      # Main dashboard controller and view logic
+├── public/                           # Static assets and design resources
+├── .env                              # Environment configuration (Port, API settings)
+├── package.json                      # Dependency manifests and automation scripts
+└── server.js                         # Express.js entry point and static file server

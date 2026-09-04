@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream text-brownDark font-body antialiased;
+  }
+  ::selection {
+    @apply bg-gold/30;
+  }
+}
+
+/* ── Urdu (Nastaliq) typography ──────────────────────────────
+   Applied to <body> when the language toggle switches to Urdu.
+   Nastaliq script needs generous line-height to avoid clipping. */
+.font-urdu,
+.font-urdu input,
+.font-urdu textarea,
+.font-urdu select {
+  font-family: 'Noto Nastaliq Urdu', 'Manrope', serif;
+}
+.font-urdu p,
+.font-urdu span,
+.font-urdu div,
+.font-urdu label,
+.font-urdu button,
+.font-urdu a,
+.font-urdu h1,
+.font-urdu h2,
+.font-urdu h3,
+.font-urdu h4 {
+  line-height: 1.95;
+}
+
+/* Warm scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f2eadb;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(201, 162, 39, 0.4);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 162, 39, 0.6);
+}

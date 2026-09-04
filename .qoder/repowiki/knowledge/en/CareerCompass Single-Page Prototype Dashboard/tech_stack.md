@@ -1,0 +1,1 @@
+Single-file HTML5 application styled exclusively with Tailwind CSS (loaded via CDN) plus custom CSS variables and keyframe animations; uses Inter font from Google Fonts. No JavaScript framework, bundler, or backend — all logic is vanilla JS in a single inline script block.

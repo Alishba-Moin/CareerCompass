@@ -1,0 +1,5 @@
+node_modules/
+career_compass.db
+career_compass.db-wal
+career_compass.db-shm
+.env

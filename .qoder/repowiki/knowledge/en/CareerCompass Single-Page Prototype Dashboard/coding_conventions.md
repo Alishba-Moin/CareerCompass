@@ -1,0 +1,5 @@
+- Each major UI area is wrapped in a `<section>` with a descriptive `id` attribute used both for anchor navigation and for targeting elements in the inline script.
+- Reusable visual components (agent cards, skill bars, stat boxes) share common base classes like `glass`, `glow`, `glow-sm`, and `animate-slide-up` defined in the embedded `<style>` block rather than being duplicated per component.
+- Interactive behavior is attached via inline `onclick`/`onkeydown` handlers on elements that call top-level functions declared in the single inline `<script>` block (e.g., `sendMessage`, `runPipeline`, `switchTab`, `openEditProfile`).
+- Agent pipeline cards use a consistent `data-agent` attribute paired with a `.agent-status` dot element whose class is toggled between idle (`bg-slate-700`), active (`bg-brand-500 animate-pulse-dot`), and completed (`bg-emerald-500`) states during the pipeline animation.
+- Skill and progress indicators are rendered as percentage bars built from a fixed-width container div with an inner child whose `width` style is set inline to the desired percentage value.

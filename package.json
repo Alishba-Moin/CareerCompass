@@ -1,0 +1,29 @@
+{
+  "name": "careercompass",
+  "version": "0.1.0",
+  "description": "AI-powered career guidance platform for Pakistani students",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node database/seed.js",
+    "test": "node database/seed.js && node agents/marketIntelligenceAgent.test.js && node agents/careerPathAgent.test.js && node agents/progressTrackerAgent.test.js && node database/seed.js && node agents/careerCoachOrchestrator.test.js",
+    "frontend:install": "npm --prefix frontend install",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build"
+  },
+  "keywords": [
+    "career",
+    "ai",
+    "pakistan",
+    "hackathon"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "sql.js": "^1.14.2"
+  }
+}

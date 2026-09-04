@@ -1,0 +1,150 @@
+{
+  "app": {
+    "name": "CareerCompass",
+    "tagline": "AI career guidance for Pakistani students",
+    "formula": "50% skills · 30% demand · 20% tasks"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "coach": "AI Coach",
+    "pipeline": "Pipeline",
+    "skills": "Skills",
+    "market": "Market",
+    "plan": "Plan"
+  },
+  "profile": {
+    "title": "Student Profile",
+    "education": "Education",
+    "interests": "Interests",
+    "skills": "Current Skills",
+    "graduate": "Graduate",
+    "intermediate": "Intermediate",
+    "classOf": "Class of {year}",
+    "editProfile": "Edit Profile"
+  },
+  "score": {
+    "title": "Career Readiness Score",
+    "good": "Good — strong progress",
+    "moderate": "Moderate — a few areas to strengthen",
+    "early": "Early stage — plenty of room to grow",
+    "skillMatch": "Skills Match",
+    "remoteDemand": "Remote Demand",
+    "taskProgress": "Task Progress",
+    "tasksCompleted": "{completed} of {total} tasks completed",
+    "targetRole": "Target role",
+    "formula": "50% skills + 30% demand + 20% tasks"
+  },
+  "coach": {
+    "title": "Ask Career Coach",
+    "subtitle": "AI-powered guidance",
+    "online": "Online",
+    "multiAgent": "Multi-Agent System",
+    "placeholder": "Type your career question… (e.g. AI/ML Engineer, Web Development)",
+    "analyze": "Analyze",
+    "thinking": "Coach is thinking",
+    "suggested": "Try asking",
+    "intro": "Hello! I am your AI Career Coach. Write any career track — for example AI/ML Engineer or Web Development — and I will run a full analysis of your profile, the market, and a 4-week plan.",
+    "recStrong": "{name}, {role} is an excellent direction for you — your existing skills are already strong.",
+    "recModerate": "{name}, {role} is a great career path — and your foundation is already solid.",
+    "recEarly": "{name}, choosing {role} is an exciting decision. A few important skills are still to learn, but it is absolutely achievable!",
+    "recSkillsFew": "Only {n} skills remain to learn — {gaps}.",
+    "recSkillsMany": "{n} important skills remain — such as {gaps}. Work through them step by step; it is very doable!",
+    "recSkillsNone": "Your skills already align with the target role — excellent!",
+    "recMarketRemote": "Remote demand for {role} in Pakistan is at {pct}% — freelancing and remote roles look very promising.",
+    "recMarketLocal": "Local demand for {role} is at {pct}% — strong opportunities across Lahore, Karachi, and Islamabad.",
+    "recProject": "Portfolio project: \"{project}\" — designed to impress employers.",
+    "recPlan": "Your 4-week action plan is ready. A little consistent work every day compounds fast!",
+    "recScore": "Updated readiness score: {score}/100.",
+    "toggleFail": "Could not update task \"{task}\" — please try again.",
+    "profileUpdated": "Profile updated successfully. Run a new analysis to refresh your skill gap report and action plan."
+  },
+  "cc": {
+    "title": "Agent Command Center",
+    "subtitle": "Multi-agent pipeline — live execution stream",
+    "idle": "IDLE",
+    "executing": "EXECUTING",
+    "complete": "COMPLETE",
+    "error": "ERROR",
+    "agentCoach": "Career Coach",
+    "agentSkill": "Skill Assessment",
+    "agentMarket": "Market Intelligence",
+    "agentPath": "Career Path",
+    "agentRoadmap": "Roadmap Generator",
+    "agentProgress": "Progress Tracker",
+    "stepCoach": "Analyzing student profile & query",
+    "stepSkill": "Comparing skills vs role matrix",
+    "stepMarket": "Querying Pakistani hiring trends",
+    "stepPath": "Selecting optimal career path",
+    "stepRoadmap": "Constructing 4-week action plan",
+    "stepProgress": "Computing updated readiness score",
+    "sumStrengths": "Found {s} strengths, {g} gaps",
+    "sumDemand": "Remote demand: {pct}%",
+    "sumTasks": "{n} tasks · Project: {title}",
+    "sumScore": "Score: {score}/100",
+    "sumProfile": "Student: {name} · query routed",
+    "sumPath": "Recommended: {role}",
+    "errNetwork": "Backend server disconnected — is the server running on port 3000?",
+    "errRetry": "Please check your connection and try again."
+  },
+  "skills": {
+    "strengthsTitle": "Strengths",
+    "strengthsSub": "Skills you already have",
+    "gapsTitle": "Gaps to Close",
+    "gapsSub": "Skills to learn next",
+    "matched": "Matched",
+    "toLearn": "To Learn",
+    "emptyStrengths": "No strengths matched for this role yet.",
+    "noGaps": "No gaps — all required skills matched!",
+    "empty": "Run an analysis to see your skill profile",
+    "emptySub": "Ask the coach about a career track above"
+  },
+  "market": {
+    "title": "Pakistan Market Insights",
+    "local": "Local Demand",
+    "remote": "Remote Demand",
+    "growth": "Growth Trend",
+    "salaryTitle": "Average Salary Range (PKR/mo)",
+    "hubsTitle": "Top Hiring Hubs",
+    "hubLahore": "Lahore — Systems Ltd, Arbisoft",
+    "hubKarachi": "Karachi — 10Pearls, VentureDive",
+    "hubIslamabad": "Islamabad — TkXel, Contour Software",
+    "hubRemote": "Remote — Toptal, Turing, Crossover",
+    "salJrFS": "Jr. Full Stack",
+    "salJrML": "Jr. ML Engineer",
+    "salMidReact": "Mid React Dev",
+    "salSrAI": "Sr. AI Engineer",
+    "empty": "Run an analysis to see market data"
+  },
+  "plan": {
+    "title": "4-Week Action Plan",
+    "badge": "{n} tasks · 4 weeks",
+    "portfolioTitle": "Recommended Portfolio Project",
+    "techStack": "Tech Stack",
+    "duration": "Duration",
+    "impact": "Impact",
+    "empty": "Run an analysis to generate your personalized plan"
+  },
+  "edit": {
+    "title": "Edit Profile",
+    "education": "Education Level",
+    "interests": "Interests",
+    "interestsHint": "Comma-separated (e.g. AI, Machine Learning, Web Dev)",
+    "skills": "Existing Skills",
+    "skillsHint": "Comma-separated (e.g. Python, HTML/CSS)",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "saving": "Saving…"
+  },
+  "student": {
+    "switch": "Switch Student",
+    "select": "Select Student"
+  },
+  "lang": {
+    "label": "Language"
+  },
+  "common": {
+    "week": "Week {n}",
+    "error": "Error",
+    "loading": "Loading…"
+  }
+}

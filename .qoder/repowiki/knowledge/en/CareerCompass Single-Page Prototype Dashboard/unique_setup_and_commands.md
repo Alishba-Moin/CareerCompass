@@ -1,0 +1,1 @@
+No build or setup required — simply open `index.html` in a browser. Requires an internet connection to load the Tailwind CSS CDN and Google Fonts.

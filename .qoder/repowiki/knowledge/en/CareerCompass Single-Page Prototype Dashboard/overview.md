@@ -1,0 +1,1 @@
+A single-file, Tailwind-styled prototype dashboard that visualizes an AI-powered career coaching experience for Pakistani students, including profile, chat, multi-agent pipeline, skills gaps, market insights, and a 4-week action plan.

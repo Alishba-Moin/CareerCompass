@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerCompass — AI Career Coach for Pakistani Students</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .glass { background: rgba(15,23,42,0.6); backdrop-filter: blur(16px); border: 1px solid rgba(99,102,241,0.1); }
+    .glow { box-shadow: 0 0 30px rgba(99,102,241,0.15); }
+    .glow-sm { box-shadow: 0 0 15px rgba(99,102,241,0.1); }
+    .score-ring { background: conic-gradient(#6366f1 var(--score-deg), #1e293b var(--score-deg)); }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+    @keyframes slide-up { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes flow { 0%{stroke-dashoffset:20} 100%{stroke-dashoffset:0} }
+    @keyframes typing { 0%,100%{opacity:.3} 50%{opacity:1} }
+    .animate-slide-up { animation: slide-up .4s ease-out forwards; }
+    .animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    .agent-card { transition: all .3s ease; }
+    .agent-card:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(99,102,241,0.2); }
+    .agent-card.active { border-color: #6366f1; box-shadow: 0 0 25px rgba(99,102,241,0.25); }
+    .chat-msg { animation: slide-up .3s ease-out; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    .checklist-item input:checked + span { text-decoration: line-through; color: #64748b; }
+    .tab-btn.active { background: #4f46e5; color: white; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+
+  <!-- ─── NAVBAR ─── -->
+  <nav class="sticky top-0 z-50 glass border-b border-slate-800/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-sm shadow-lg">CC</div>
+        <div>
+          <span class="font-bold text-lg text-white tracking-tight">CareerCompass</span>
+          <span class="hidden sm:inline text-xs text-slate-500 ml-2 font-medium">AI Career Coach</span>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-1 text-sm">
+        <a href="#profile" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">Profile</a>
+        <a href="#coach" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">Coach</a>
+        <a href="#pipeline" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">Agents</a>
+        <a href="#skills" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">Skills</a>
+        <a href="#market" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">Market</a>
+        <a href="#plan" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">Plan</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="hidden sm:block text-xs text-slate-500 bg-slate-800/60 px-3 py-1 rounded-full">Prototype v0.1</span>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white text-xs font-bold">AK</div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- ─── HERO + PROFILE SECTION ─── -->
+    <section id="profile" class="grid lg:grid-cols-3 gap-6">
+      <!-- Profile Card -->
+      <div class="lg:col-span-1 glass rounded-2xl p-6 glow">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center text-white text-xl font-bold shadow-xl">AK</div>
+          <div>
+            <h2 class="text-xl font-bold text-white">Ali Khan</h2>
+            <p class="text-sm text-slate-400">CS Graduate — FAST NUCES, Islamabad</p>
+            <span class="inline-block mt-1 text-[10px] font-semibold bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded-full">Graduate · Class of 2025</span>
+          </div>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div>
+            <p class="text-slate-500 text-xs uppercase tracking-wider mb-1.5">Education Level</p>
+            <div class="flex gap-2">
+              <span class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 text-xs border border-slate-700/50">Intermediate</span>
+              <span class="px-3 py-1 rounded-lg bg-brand-600/20 text-brand-300 text-xs border border-brand-500/30 font-medium">Graduate ✓</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-slate-500 text-xs uppercase tracking-wider mb-1.5">Current Skills</p>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20">Python</span>
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20">JavaScript</span>
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20">React</span>
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20">SQL</span>
+              <span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 text-xs border border-amber-500/20">ML Basics</span>
+              <span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 text-xs border border-amber-500/20">Git</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-slate-500 text-xs uppercase tracking-wider mb-1.5">Interests</p>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 text-xs border border-sky-500/20">AI / Machine Learning</span>
+              <span class="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 text-xs border border-sky-500/20">Full Stack Dev</span>
+              <span class="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 text-xs border border-sky-500/20">Freelancing</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-slate-500 text-xs uppercase tracking-wider mb-1.5">Career Goal</p>
+            <p class="text-slate-300 text-sm leading-relaxed">"Mujhe AI/ML path choose karna chahiye ya Full Stack Web Development?"</p>
+          </div>
+        </div>
+        <button onclick="openEditProfile()" class="mt-5 w-full py-2 text-xs font-medium text-brand-300 border border-brand-500/30 rounded-xl hover:bg-brand-500/10 transition">
+          ✏️ Edit Profile
+        </button>
+      </div>
+
+      <!-- Career Readiness + Quick Stats -->
+      <div class="lg:col-span-2 grid sm:grid-cols-2 gap-6">
+        <!-- Score Card -->
+        <div class="glass rounded-2xl p-6 glow flex flex-col items-center justify-center text-center">
+          <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">Career Readiness Score</p>
+          <div class="relative w-40 h-40 mb-4">
+            <div class="score-ring absolute inset-0 rounded-full" style="--score-deg:230deg"></div>
+            <div class="absolute inset-3 rounded-full bg-slate-950 flex flex-col items-center justify-center">
+              <span id="scoreNum" class="text-5xl font-black text-white">64</span>
+              <span class="text-xs text-slate-500 -mt-1">/ 100</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Moderate — <span class="text-amber-400 font-medium">Kuch areas mein improvement zaroori hai</span></p>
+          <div class="flex gap-3 mt-4 text-xs">
+            <span class="text-emerald-400">▲ +8 from last month</span>
+          </div>
+        </div>
+        <!-- Quick Stats -->
+        <div class="space-y-4">
+          <div class="glass rounded-2xl p-5 glow-sm">
+            <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Skills Match — AI/ML Path</p>
+            <div class="flex items-end gap-2">
+              <span class="text-3xl font-bold text-white">42%</span>
+              <span class="text-xs text-slate-500 mb-1">match</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 mt-2"><div class="bg-gradient-to-r from-brand-500 to-brand-400 h-2 rounded-full" style="width:42%"></div></div>
+            <p class="text-xs text-slate-500 mt-1.5">6 skills gap identified · 2 in progress</p>
+          </div>
+          <div class="glass rounded-2xl p-5 glow-sm">
+            <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Skills Match — Full Stack Path</p>
+            <div class="flex items-end gap-2">
+              <span class="text-3xl font-bold text-white">71%</span>
+              <span class="text-xs text-slate-500 mb-1">match</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 mt-2"><div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full" style="width:71%"></div></div>
+            <p class="text-xs text-slate-500 mt-1.5">3 skills gap identified · 1 in progress</p>
+          </div>
+          <div class="glass rounded-2xl p-5 glow-sm">
+            <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Market Demand — Pakistan 🇵🇰</p>
+            <div class="flex items-center justify-between">
+              <div><span class="text-sm text-slate-300">AI/ML:</span> <span class="text-emerald-400 text-sm font-semibold">Growing ↑</span></div>
+              <div><span class="text-sm text-slate-300">Full Stack:</span> <span class="text-emerald-400 text-sm font-semibold">High ↑↑</span></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Remote opportunities available for both paths</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── AI CAREER COACH CHAT ─── -->
+    <section id="coach" class="glass rounded-2xl glow overflow-hidden">
+      <div class="border-b border-slate-800/60 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-sm">🤖</div>
+          <div>
+            <h3 class="font-semibold text-white text-sm">Ask Career Coach</h3>
+            <p class="text-[11px] text-slate-500">AI-powered guidance · <span class="text-emerald-400">Online</span></p>
+          </div>
+        </div>
+        <span class="text-[10px] text-slate-600 bg-slate-800/50 px-2 py-1 rounded-md">Powered by Multi-Agent System</span>
+      </div>
+      <div id="chatArea" class="h-80 overflow-y-auto p-6 space-y-4">
+        <!-- Coach greeting -->
+        <div class="chat-msg flex gap-3">
+          <div class="w-7 h-7 rounded-lg bg-brand-600/30 flex items-center justify-center text-xs shrink-0 mt-0.5">🤖</div>
+          <div class="bg-slate-800/60 rounded-2xl rounded-tl-md px-4 py-3 max-w-lg text-sm text-slate-300 leading-relaxed">
+            Assalam o Alaikum Ali! 👋 Main tumhara AI Career Coach hoon. Tumhare profile ko analyze kar ke, main tumhe <strong class="text-white">AI/ML vs Full Stack</strong> ke behtar faislay mein guide karunga. Koi bhi sawal poochho — <span class="text-slate-500 italic">bilkul freely!</span>
+          </div>
+        </div>
+        <!-- Student question -->
+        <div class="chat-msg flex gap-3 justify-end">
+          <div class="bg-brand-600/20 border border-brand-500/20 rounded-2xl rounded-tr-md px-4 py-3 max-w-lg text-sm text-slate-200 leading-relaxed">
+            Mujhe AI/ML path choose karna chahiye ya Full Stack Web Development? Dono mein interest hai lekin confuse hoon. 🤔
+          </div>
+          <div class="w-7 h-7 rounded-lg bg-emerald-600/30 flex items-center justify-center text-xs shrink-0 mt-0.5 text-white font-bold">A</div>
+        </div>
+        <!-- Coach analysis -->
+        <div class="chat-msg flex gap-3">
+          <div class="w-7 h-7 rounded-lg bg-brand-600/30 flex items-center justify-center text-xs shrink-0 mt-0.5">🤖</div>
+          <div class="bg-slate-800/60 rounded-2xl rounded-tl-md px-4 py-3 max-w-lg text-sm text-slate-300 leading-relaxed space-y-2">
+            <p>Acha sawal hai Ali! Main ne tumhara <strong class="text-white">Skill Assessment</strong>, <strong class="text-white">Market Analysis</strong>, aur <strong class="text-white">Career Path</strong> agents se data li hai. Yeh raha mera analysis:</p>
+            <div class="bg-slate-900/60 rounded-xl p-3 mt-2 space-y-1.5">
+              <p class="text-xs text-slate-500 uppercase tracking-wider">Coach Verdict</p>
+              <p><span class="text-emerald-400 font-semibold">Short-term (0–6 months):</span> Full Stack Dev — tumhare existing React + JS skills se jaldi job-ready ho sakte ho.</p>
+              <p><span class="text-brand-400 font-semibold">Long-term (6–18 months):</span> AI/ML specialization add karo — Pakistan aur remote market mein demand growing hai.</p>
+              <p class="text-xs text-slate-500 mt-2">📊 Tumhara <strong class="text-slate-300">hybrid path</strong> best fit hai — Full Stack base + AI/ML layer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Suggested questions -->
+      <div class="px-6 pb-2 flex flex-wrap gap-2">
+        <button onclick="sendSuggested(this)" class="text-xs bg-slate-800/60 border border-slate-700/40 text-slate-400 px-3 py-1.5 rounded-full hover:bg-slate-700/60 hover:text-slate-200 transition">Mujhe freelancing start karni chahiye?</button>
+        <button onclick="sendSuggested(this)" class="text-xs bg-slate-800/60 border border-slate-700/40 text-slate-400 px-3 py-1.5 rounded-full hover:bg-slate-700/60 hover:text-slate-200 transition">Best portfolio projects kya hain?</button>
+        <button onclick="sendSuggested(this)" class="text-xs bg-slate-800/60 border border-slate-700/40 text-slate-400 px-3 py-1.5 rounded-full hover:bg-slate-700/60 hover:text-slate-200 transition">Remote jobs kaise dhundhein?</button>
+      </div>
+      <!-- Input -->
+      <div class="p-4 border-t border-slate-800/40">
+        <div class="flex gap-3">
+          <input id="chatInput" type="text" placeholder="Apna sawal yahan likhein... (Type your question)" class="flex-1 bg-slate-800/50 border border-slate-700/40 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 transition" onkeydown="if(event.key==='Enter')sendMessage()" />
+          <button onclick="sendMessage()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-xl transition shadow-lg shadow-brand-600/20">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── MULTI-AGENT PIPELINE ─── -->
+    <section id="pipeline">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-white">Multi-Agent Pipeline</h3>
+          <p class="text-xs text-slate-500">Sub-agents collaborating to build your career roadmap · <span class="italic">tumhare liye kaam kar rahe hain</span></p>
+        </div>
+        <button onclick="runPipeline()" id="pipelineBtn" class="text-xs bg-brand-600/20 text-brand-300 border border-brand-500/30 px-4 py-2 rounded-xl hover:bg-brand-600/30 transition font-medium">▶ Run Analysis</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="agentGrid">
+        <!-- Agent 1 -->
+        <div class="agent-card glass rounded-xl p-4 text-center border border-transparent" data-agent="coach">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-600/20 flex items-center justify-center text-2xl mb-3">🧭</div>
+          <p class="text-xs font-semibold text-white">Career Coach</p>
+          <p class="text-[10px] text-slate-500 mt-0.5">Orchestrator</p>
+          <div class="mt-2 flex justify-center"><span class="agent-status w-2 h-2 rounded-full bg-slate-700"></span></div>
+        </div>
+        <!-- Agent 2 -->
+        <div class="agent-card glass rounded-xl p-4 text-center border border-transparent" data-agent="skill">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 flex items-center justify-center text-2xl mb-3">📊</div>
+          <p class="text-xs font-semibold text-white">Skill Assessment</p>
+          <p class="text-[10px] text-slate-500 mt-0.5">Evaluator</p>
+          <div class="mt-2 flex justify-center"><span class="agent-status w-2 h-2 rounded-full bg-slate-700"></span></div>
+        </div>
+        <!-- Agent 3 -->
+        <div class="agent-card glass rounded-xl p-4 text-center border border-transparent" data-agent="market">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-sky-500/20 to-sky-600/20 flex items-center justify-center text-2xl mb-3">🌐</div>
+          <p class="text-xs font-semibold text-white">Market Intel</p>
+          <p class="text-[10px] text-slate-500 mt-0.5">Pakistan + Remote</p>
+          <div class="mt-2 flex justify-center"><span class="agent-status w-2 h-2 rounded-full bg-slate-700"></span></div>
+        </div>
+        <!-- Agent 4 -->
+        <div class="agent-card glass rounded-xl p-4 text-center border border-transparent" data-agent="path">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/20 flex items-center justify-center text-2xl mb-3">🛤️</div>
+          <p class="text-xs font-semibold text-white">Career Path</p>
+          <p class="text-[10px] text-slate-500 mt-0.5">Planner</p>
+          <div class="mt-2 flex justify-center"><span class="agent-status w-2 h-2 rounded-full bg-slate-700"></span></div>
+        </div>
+        <!-- Agent 5 -->
+        <div class="agent-card glass rounded-xl p-4 text-center border border-transparent" data-agent="roadmap">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center text-2xl mb-3">🗺️</div>
+          <p class="text-xs font-semibold text-white">Roadmap Gen</p>
+          <p class="text-[10px] text-slate-500 mt-0.5">Builder</p>
+          <div class="mt-2 flex justify-center"><span class="agent-status w-2 h-2 rounded-full bg-slate-700"></span></div>
+        </div>
+        <!-- Agent 6 -->
+        <div class="agent-card glass rounded-xl p-4 text-center border border-transparent" data-agent="progress">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-rose-500/20 to-rose-600/20 flex items-center justify-center text-2xl mb-3">📈</div>
+          <p class="text-xs font-semibold text-white">Progress Tracker</p>
+          <p class="text-[10px] text-slate-500 mt-0.5">Monitor</p>
+          <div class="mt-2 flex justify-center"><span class="agent-status w-2 h-2 rounded-full bg-slate-700"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SKILL GAP ANALYSIS ─── -->
+    <section id="skills" class="grid lg:grid-cols-2 gap-6">
+      <!-- Strengths -->
+      <div class="glass rounded-2xl p-6 glow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-lg">💪</span>
+          <h3 class="font-semibold text-white">Strengths — <span class="text-emerald-400 text-sm">Jo tum already jaante ho</span></h3>
+        </div>
+        <div class="space-y-3">
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">JavaScript / ES6+</span><span class="text-emerald-400 text-xs font-medium">85%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width:85%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">React.js</span><span class="text-emerald-400 text-xs font-medium">78%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width:78%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Python</span><span class="text-emerald-400 text-xs font-medium">72%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width:72%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">SQL / Databases</span><span class="text-emerald-400 text-xs font-medium">65%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width:65%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Git / Version Control</span><span class="text-emerald-400 text-xs font-medium">70%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width:70%"></div></div></div>
+        </div>
+      </div>
+      <!-- Gaps -->
+      <div class="glass rounded-2xl p-6 glow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-lg">🎯</span>
+          <h3 class="font-semibold text-white">Gaps to Close — <span class="text-amber-400 text-sm">Yeh seekhna zaroori hai</span></h3>
+        </div>
+        <div class="space-y-3">
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">TensorFlow / PyTorch</span><span class="text-rose-400 text-xs font-medium">15%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-rose-500/70 h-2 rounded-full" style="width:15%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Data Preprocessing / Pandas</span><span class="text-amber-400 text-xs font-medium">30%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-amber-500/70 h-2 rounded-full" style="width:30%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Node.js / Express</span><span class="text-amber-400 text-xs font-medium">35%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-amber-500/70 h-2 rounded-full" style="width:35%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Docker / DevOps Basics</span><span class="text-rose-400 text-xs font-medium">10%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-rose-500/70 h-2 rounded-full" style="width:10%"></div></div></div>
+          <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">System Design Basics</span><span class="text-rose-400 text-xs font-medium">20%</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-rose-500/70 h-2 rounded-full" style="width:20%"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── PAKISTAN JOB MARKET INSIGHTS ─── -->
+    <section id="market" class="glass rounded-2xl p-6 glow-sm">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🇵🇰</span>
+          <div>
+            <h3 class="font-semibold text-white">Pakistan Job Market Insights</h3>
+            <p class="text-xs text-slate-500">Local demand + Remote global opportunities · <span class="italic">Ghar beth ke bhi kamao</span></p>
+          </div>
+        </div>
+        <div class="flex gap-1 text-xs">
+          <button class="tab-btn active px-3 py-1 rounded-lg bg-brand-600 text-white font-medium" onclick="switchTab(this,'local')">Local</button>
+          <button class="tab-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 font-medium" onclick="switchTab(this,'remote')">Remote</button>
+        </div>
+      </div>
+      <div id="market-local" class="grid md:grid-cols-3 gap-4">
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Top Demand — Local</p>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Full Stack Developer</span><span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">High</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">React Developer</span><span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">High</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Python Developer</span><span class="text-xs bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full font-medium">Medium</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">ML Engineer</span><span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-medium">Growing</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Data Analyst</span><span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-medium">Growing</span></div>
+          </div>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Avg. Salary Range (PKR/mo)</p>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Jr. Full Stack</span><span class="text-sm text-white font-semibold">80K–150K</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Jr. ML Engineer</span><span class="text-sm text-white font-semibold">90K–160K</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Mid React Dev</span><span class="text-sm text-white font-semibold">150K–300K</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Sr. AI Engineer</span><span class="text-sm text-white font-semibold">250K–500K</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Data Scientist</span><span class="text-sm text-white font-semibold">200K–400K</span></div>
+          </div>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Top Hiring Hubs</p>
+          <div class="space-y-2 mt-3">
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-400"></span><span class="text-sm text-slate-300">Lahore — Systems Ltd, Arbisoft</span></div>
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="text-sm text-slate-300">Karachi — 10Pearls, VentureDive</span></div>
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-sky-400"></span><span class="text-sm text-slate-300">Islamabad — TkXel, Contour Software</span></div>
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span class="text-sm text-slate-300">Remote — Toptal, Turing, Crossover</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="market-remote" class="hidden grid md:grid-cols-3 gap-4">
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Remote Demand — Global</p>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Full Stack (MERN/Next.js)</span><span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Very High</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">AI/ML Engineer</span><span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Very High</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">DevOps Engineer</span><span class="text-xs bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full font-medium">High</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Cloud Engineer (AWS)</span><span class="text-xs bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full font-medium">High</span></div>
+          </div>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Remote Salary (USD/mo)</p>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Jr. Full Stack</span><span class="text-sm text-white font-semibold">$800–$2,000</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">ML Engineer</span><span class="text-sm text-white font-semibold">$1,500–$4,000</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Mid Full Stack</span><span class="text-sm text-white font-semibold">$2,000–$5,000</span></div>
+            <div class="flex justify-between items-center"><span class="text-sm text-slate-300">Sr. AI/ML</span><span class="text-sm text-white font-semibold">$4,000–$8,000</span></div>
+          </div>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Platforms for Pakistani Devs</p>
+          <div class="space-y-2 mt-3">
+            <div class="flex items-center gap-2"><span class="text-sm">🔹</span><span class="text-sm text-slate-300">Toptal — Premium freelance</span></div>
+            <div class="flex items-center gap-2"><span class="text-sm">🔹</span><span class="text-sm text-slate-300">Turing — AI-matched remote</span></div>
+            <div class="flex items-center gap-2"><span class="text-sm">🔹</span><span class="text-sm text-slate-300">Upwork — Build reputation</span></div>
+            <div class="flex items-center gap-2"><span class="text-sm">🔹</span><span class="text-sm text-slate-300">LinkedIn — Direct outreach</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── 4-WEEK ACTION PLAN ─── -->
+    <section id="plan" class="glass rounded-2xl p-6 glow-sm">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📋</span>
+          <div>
+            <h3 class="font-semibold text-white">4-Week Action Plan</h3>
+            <p class="text-xs text-slate-500">Personalized checklist · <span class="italic">Har hafte ka plan, har din ka progress</span></p>
+          </div>
+        </div>
+        <span class="text-xs bg-brand-500/15 text-brand-300 px-3 py-1 rounded-full font-medium">Week 1 of 4</span>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Week 1 -->
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-brand-500/20">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-brand-300">Week 1</span>
+            <span class="text-[10px] text-slate-500">Foundation</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" checked class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Complete Node.js crash course (4 hrs)</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" checked class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Set up GitHub profile + pin 3 repos</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Build REST API with Express + MongoDB</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Read "Pakistan's IT Industry 2025" report</span></label>
+          </div>
+        </div>
+        <!-- Week 2 -->
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-300">Week 2</span>
+            <span class="text-[10px] text-slate-500">Build</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Start portfolio project: Task Manager App</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Learn Docker basics (2 hrs)</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Practice 10 LeetCode easy problems</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Deploy API on Render/Railway</span></label>
+          </div>
+        </div>
+        <!-- Week 3 -->
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-300">Week 3</span>
+            <span class="text-[10px] text-slate-500">ML Intro</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Complete Google's ML Crash Course (half)</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Pandas + NumPy hands-on exercises</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Build a simple ML model (Titanic dataset)</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Update LinkedIn with new skills</span></label>
+          </div>
+        </div>
+        <!-- Week 4 -->
+        <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-300">Week 4</span>
+            <span class="text-[10px] text-slate-500">Launch</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Polish portfolio site + deploy</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Write 1 technical blog post</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Apply to 5 local + 3 remote positions</span></label>
+            <label class="checklist-item flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-brand-500 rounded" /><span class="text-slate-300 text-xs leading-relaxed">Schedule mock interview with peer</span></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── PORTFOLIO PROJECT RECOMMENDATIONS ─── -->
+    <section class="grid lg:grid-cols-3 gap-6">
+      <div class="glass rounded-2xl p-6 glow-sm border-t-2 border-t-brand-500">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-2xl">🏗️</span>
+          <span class="text-[10px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded-full font-medium">Recommended #1</span>
+        </div>
+        <h4 class="font-bold text-white mb-1">Full Stack Task Manager</h4>
+        <p class="text-xs text-slate-400 mb-3 leading-relaxed">React + Node.js + MongoDB task app with auth, CRUD, and real-time updates. <span class="italic text-slate-500">Yeh tumhara main portfolio piece hoga.</span></p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">React</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Node.js</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">MongoDB</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Socket.io</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-emerald-400">⏱ ~2 weeks</span>
+          <span class="text-brand-300 font-medium">Impact: High ★</span>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-6 glow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-2xl">🤖</span>
+          <span class="text-[10px] bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full font-medium">Recommended #2</span>
+        </div>
+        <h4 class="font-bold text-white mb-1">ML Sentiment Analyzer</h4>
+        <p class="text-xs text-slate-400 mb-3 leading-relaxed">Urdu/English sentiment analysis tool using Python + Flask API. <span class="italic text-slate-500">Pakistani market ke liye unique project!</span></p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Python</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Flask</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">NLTK</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Scikit-learn</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-amber-400">⏱ ~1.5 weeks</span>
+          <span class="text-brand-300 font-medium">Impact: Medium-High</span>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-6 glow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-2xl">📊</span>
+          <span class="text-[10px] bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full font-medium">Recommended #3</span>
+        </div>
+        <h4 class="font-bold text-white mb-1">Pakistan Job Trends Dashboard</h4>
+        <p class="text-xs text-slate-400 mb-3 leading-relaxed">Interactive dashboard showing tech job trends in Pakistan using scraped data. <span class="italic text-slate-500">Data visualization skills bhi improve hongi.</span></p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">React</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Chart.js</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">Python</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">API</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-amber-400">⏱ ~1 week</span>
+          <span class="text-brand-300 font-medium">Impact: Medium</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── FOOTER ─── -->
+    <footer class="text-center py-8 border-t border-slate-800/40">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-[10px] font-bold">CC</div>
+        <span class="font-semibold text-sm text-slate-400">CareerCompass</span>
+      </div>
+      <p class="text-xs text-slate-600">AI-Powered Career Guidance for Pakistani Students · Prototype v0.1</p>
+      <p class="text-[10px] text-slate-700 mt-1">Built for Hackathon Demo · No real AI agents or APIs connected yet</p>
+    </footer>
+  </main>
+
+  <!-- ─── EDIT PROFILE MODAL ─── -->
+  <div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="glass rounded-2xl p-6 w-full max-w-md mx-4 glow animate-slide-up">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-bold text-white">Edit Profile</h3>
+        <button onclick="closeEditProfile()" class="text-slate-500 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="space-y-4 text-sm">
+        <div>
+          <label class="text-xs text-slate-400 mb-1 block">Education Level</label>
+          <select class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+            <option>Intermediate</option><option selected>Graduate</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 mb-1 block">Institution</label>
+          <input type="text" value="FAST NUCES, Islamabad" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500" />
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 mb-1 block">Skills (comma separated)</label>
+          <input type="text" value="Python, JavaScript, React, SQL, Git, ML Basics" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500" />
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 mb-1 block">Interests</label>
+          <input type="text" value="AI / Machine Learning, Full Stack Dev, Freelancing" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500" />
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 mb-1 block">Career Question</label>
+          <textarea class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500 h-20 resize-none">Mujhe AI/ML path choose karna chahiye ya Full Stack Web Development?</textarea>
+        </div>
+        <button onclick="closeEditProfile()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-xl transition">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── JAVASCRIPT ─── -->
+  <script>
+    // Chat functionality
+    const chatResponses = [
+      "Bilkul Ali! Tumhare profile ke mutabiq, main suggest karunga ke tum <strong class='text-white'>Full Stack path pehle complete karo</strong>, phir AI/ML specialization add karo. Yeh hybrid approach tumhe 6 months mein job-ready bana degi. 🚀",
+      "Acha point hai! <strong class='text-white'>Freelancing</strong> ke liye tumhara React + Node.js combination best hai. Upwork pe start karo aur pehle 3-5 small projects lo — phir rates increase karo. Pakistan se $15-30/hr earn karna bilkul possible hai. 💰",
+      "Remote jobs ke liye yeh steps follow karo: <br>1. <strong class='text-white'>LinkedIn profile optimize</strong> karo<br>2. <strong class='text-white'>Toptal/Turing</strong> pe apply karo<br>3. Portfolio mein 2-3 strong projects rakho<br>4. English communication practice karo daily 🌍",
+      "Portfolio projects ke liye, main tumhe yeh recommend karta hoon:<br>• <strong class='text-white'>Full Stack Task Manager</strong> (highest impact)<br>• <strong class='text-white'>Urdu Sentiment Analyzer</strong> (unique AI project)<br>• <strong class='text-white'>Job Trends Dashboard</strong> (data viz skills)",
+      "Tumhara Career Readiness Score <strong class='text-white'>64/100</strong> hai — moderate level. Agar tum 4-week action plan follow karo, toh yeh <strong class='text-emerald-400'>80+</strong> tak ja sakta hai! Consistent effort zaroori hai. 📈"
+    ];
+    let responseIndex = 0;
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      appendMessage(msg, 'user');
+      input.value = '';
+      // Show typing indicator
+      showTyping();
+      setTimeout(() => {
+        removeTyping();
+        appendMessage(chatResponses[responseIndex % chatResponses.length], 'coach');
+        responseIndex++;
+      }, 1200 + Math.random() * 800);
+    }
+
+    function sendSuggested(btn) {
+      const text = btn.textContent.trim();
+      appendMessage(text, 'user');
+      showTyping();
+      setTimeout(() => {
+        removeTyping();
+        appendMessage(chatResponses[responseIndex % chatResponses.length], 'coach');
+        responseIndex++;
+      }, 1200 + Math.random() * 800);
+    }
+
+    function appendMessage(text, type) {
+      const area = document.getElementById('chatArea');
+      const div = document.createElement('div');
+      div.className = 'chat-msg flex gap-3' + (type === 'user' ? ' justify-end' : '');
+      if (type === 'user') {
+        div.innerHTML = `<div class="bg-brand-600/20 border border-brand-500/20 rounded-2xl rounded-tr-md px-4 py-3 max-w-lg text-sm text-slate-200 leading-relaxed">${text}</div><div class="w-7 h-7 rounded-lg bg-emerald-600/30 flex items-center justify-center text-xs shrink-0 mt-0.5 text-white font-bold">A</div>`;
+      } else {
+        div.innerHTML = `<div class="w-7 h-7 rounded-lg bg-brand-600/30 flex items-center justify-center text-xs shrink-0 mt-0.5">🤖</div><div class="bg-slate-800/60 rounded-2xl rounded-tl-md px-4 py-3 max-w-lg text-sm text-slate-300 leading-relaxed">${text}</div>`;
+      }
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function showTyping() {
+      const area = document.getElementById('chatArea');
+      const div = document.createElement('div');
+      div.id = 'typingIndicator';
+      div.className = 'chat-msg flex gap-3';
+      div.innerHTML = `<div class="w-7 h-7 rounded-lg bg-brand-600/30 flex items-center justify-center text-xs shrink-0 mt-0.5">🤖</div><div class="bg-slate-800/60 rounded-2xl rounded-tl-md px-4 py-3 text-sm text-slate-500"><span class="inline-flex gap-1"><span style="animation:typing 1s ease-in-out infinite">●</span><span style="animation:typing 1s ease-in-out .2s infinite">●</span><span style="animation:typing 1s ease-in-out .4s infinite">●</span></span></div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function removeTyping() {
+      const el = document.getElementById('typingIndicator');
+      if (el) el.remove();
+    }
+
+    // Pipeline animation
+    function runPipeline() {
+      const cards = document.querySelectorAll('.agent-card');
+      const btn = document.getElementById('pipelineBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Analyzing...';
+      btn.classList.add('opacity-60');
+      cards.forEach(c => { c.classList.remove('active'); c.querySelector('.agent-status').className = 'agent-status w-2 h-2 rounded-full bg-slate-700'; });
+
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i > 0) {
+          cards[i-1].classList.remove('active');
+          cards[i-1].querySelector('.agent-status').className = 'agent-status w-2 h-2 rounded-full bg-emerald-500';
+        }
+        if (i < cards.length) {
+          cards[i].classList.add('active');
+          cards[i].querySelector('.agent-status').className = 'agent-status w-2 h-2 rounded-full bg-brand-500 animate-pulse-dot';
+          i++;
+        } else {
+          clearInterval(interval);
+          btn.disabled = false;
+          btn.textContent = '✓ Analysis Complete';
+          btn.classList.remove('opacity-60');
+          setTimeout(() => { btn.textContent = '▶ Run Analysis'; btn.classList.remove('opacity-60'); }, 2500);
+        }
+      }, 700);
+    }
+
+    // Market tabs
+    function switchTab(btn, tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('market-local').classList.toggle('hidden', tab !== 'local');
+      document.getElementById('market-remote').classList.toggle('hidden', tab !== 'remote');
+    }
+
+    // Modal
+    function openEditProfile() { document.getElementById('editProfileModal').classList.remove('hidden'); }
+    function closeEditProfile() { document.getElementById('editProfileModal').classList.add('hidden'); }
+
+    // Score counter animation
+    (function animateScore() {
+      const el = document.getElementById('scoreNum');
+      let current = 0;
+      const target = 64;
+      const step = () => {
+        if (current < target) { current += 1; el.textContent = current; requestAnimationFrame(step); }
+      };
+      step();
+    })();
+  </script>
+</body>
+</html>

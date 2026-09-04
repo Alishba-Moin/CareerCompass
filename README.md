@@ -47,6 +47,7 @@ CareerCompass is an AI-driven career guidance system designed to provide persona
                                   │
                                   ▼
                     [ Unified Response Payload ]
+```
 
 ### Agent Roles
 
@@ -92,6 +93,8 @@ $$\text{Readiness Score} = \min\left(100, \text{Round}\left(\text{SkillMatchPct}
 * **Internationalization**: Custom Dictionary-based i18n Hook (English / Urdu RTL)
 
 ---
+## Project Directory Structure
+
 CareerCompass/
 ├── agents/
 │   ├── skillAssessmentAgent.js       # Logic for matching student skills to role requirements

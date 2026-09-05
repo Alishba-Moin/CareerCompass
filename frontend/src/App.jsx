@@ -11,6 +11,7 @@ import MarketSection from './components/MarketSection.jsx';
 import PlanSection from './components/PlanSection.jsx';
 import EditProfileModal from './components/EditProfileModal.jsx';
 import AuthModal from './components/AuthModal.jsx';
+import LandingPage from './components/LandingPage.jsx';
 import {
   analyze, toggleTask, updateStudent, getMe, logout as apiLogout,
   getToken, setToken, fetchStudentRoadmap,
@@ -77,60 +78,6 @@ function LoadingCard({ t }) {
   );
 }
 
-/** Splash screen when user is not logged in */
-function LandingHero({ onOpenAuth, t }) {
-  return (
-    <div className="min-h-screen bg-cream flex flex-col">
-      <div className="flex-1 flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="text-center max-w-xl"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-[#b8860b] to-[#a0522d] flex items-center justify-center shadow-2xl mb-8"
-          >
-            <Compass size={38} className="text-white" />
-          </motion.div>
-
-          <h1 className="font-display font-bold text-4xl sm:text-5xl text-brownDark leading-tight mb-4">
-            CareerCompass
-          </h1>
-          <p className="text-lg text-mocha mb-2">{t('app.tagline')}</p>
-          <p className="text-sm text-mocha/70 mb-10 max-w-sm mx-auto">
-            Sign up to get your personalised 4-week career roadmap, skill gap analysis, and real-time
-            market insights — all powered by AI agents, 100% tailored to you.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={onOpenAuth}
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#b8860b] to-[#a0522d] text-white font-bold text-base shadow-xl hover:opacity-90 transition-opacity"
-            >
-              <Sparkles size={18} />
-              {t('auth.signup')}
-            </button>
-            <button
-              onClick={onOpenAuth}
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-2xl border-2 border-[#b8860b]/40 text-[#6b3f1f] font-bold text-base hover:border-[#b8860b] hover:bg-[#b8860b]/5 transition-all"
-            >
-              {t('auth.demo')}
-            </button>
-          </div>
-
-          <p className="mt-8 text-xs text-mocha/50">
-            Free · No credit card required · Works for Pakistani students
-          </p>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const { t, lang } = useLang();
 
@@ -138,6 +85,7 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null); // full student object
   const [authLoading, setAuthLoading] = useState(true);  // checking stored token on boot
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // which tab the auth modal opens on
 
   // Student + analysis state
   const [student, setStudent] = useState(null);
@@ -171,6 +119,12 @@ export default function App() {
     setStepSummaries(Array(N_STEPS).fill(null));
     setCcPhase('idle');
     setCcError(null);
+  }, []);
+
+  /** Opens the auth modal on a specific tab ('login' | 'signup'). */
+  const openAuth = useCallback(mode => {
+    setAuthMode(mode || 'login');
+    setAuthModalOpen(true);
   }, []);
 
   // ── Boot: restore session from stored token ──────────────────────
@@ -369,9 +323,14 @@ export default function App() {
   if (!currentUser) {
     return (
       <>
-        <Navbar currentUser={null} onLogout={handleLogout} onOpenAuth={() => setAuthModalOpen(true)} />
-        <LandingHero onOpenAuth={() => setAuthModalOpen(true)} t={t} />
-        <AuthModal open={authModalOpen} onSuccess={applyAuthSuccess} />
+        <Navbar currentUser={null} onLogout={handleLogout} onOpenAuth={() => openAuth('login')} />
+        <LandingPage onOpenAuth={openAuth} />
+        <AuthModal
+          open={authModalOpen}
+          initialMode={authMode}
+          onSuccess={applyAuthSuccess}
+          onClose={() => setAuthModalOpen(false)}
+        />
       </>
     );
   }
@@ -379,7 +338,7 @@ export default function App() {
   // ── Render: main dashboard ───────────────────────────────────────
   return (
     <div className="min-h-screen bg-cream">
-      <Navbar currentUser={currentUser} onLogout={handleLogout} onOpenAuth={() => setAuthModalOpen(true)} />
+      <Navbar currentUser={currentUser} onLogout={handleLogout} onOpenAuth={() => openAuth('signup')} />
 
       <main id="dashboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome banner for newly signed-up students */}
@@ -394,7 +353,7 @@ export default function App() {
             >
               <Sparkles size={18} className="text-[#b8860b] shrink-0" />
               <p className="text-sm font-semibold text-[#6b3f1f]">
-                Welcome, {currentUser.name}! 🎉 Your personalized career roadmap and skill analysis are ready below. Use the AI Coach to explore further.
+                Welcome, {currentUser.name}! Your personalized career roadmap and skill analysis are ready below. Use the AI Coach to explore further.
               </p>
             </motion.div>
           )}
@@ -463,7 +422,12 @@ export default function App() {
         onSave={handleEditSave}
       />
 
-      <AuthModal open={authModalOpen} onSuccess={applyAuthSuccess} />
+      <AuthModal
+        open={authModalOpen}
+        initialMode={authMode}
+        onSuccess={applyAuthSuccess}
+        onClose={() => setAuthModalOpen(false)}
+      />
     </div>
   );
 }

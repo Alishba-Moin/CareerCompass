@@ -2,19 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2, Eye, EyeOff, X, User, Mail, Lock, GraduationCap,
-  Compass, ChevronRight, Zap, CheckCircle2, Sparkles, BookOpen, Target, Code2
+  Compass, ChevronRight, Zap, CheckCircle2, Sparkles, BookOpen, Target, Code2,
+  Brain, BarChart3, Cloud, ShieldCheck, Smartphone, Star, AlertTriangle
 } from 'lucide-react';
 import { useLang } from '../i18n/LanguageContext.jsx';
 
 const EDUCATION_LEVELS = ['Intermediate', 'Graduate'];
 
+// Theme-consistent role palette: tonal variations within the site's gold/brown
+// identity (amber, copper, umber, bronze) instead of generic Tailwind hues.
 const TARGET_ROLES = [
-  { value: 'AI/ML Engineer', label: 'AI/ML Engineer', icon: '🤖', color: 'from-violet-500 to-purple-600' },
-  { value: 'Full Stack Web Developer', label: 'Full Stack Web Dev', icon: '💻', color: 'from-blue-500 to-cyan-600' },
-  { value: 'Data Analyst', label: 'Data Analyst', icon: '📊', color: 'from-emerald-500 to-green-600' },
-  { value: 'Cloud Engineer', label: 'Cloud Engineer', icon: '☁️', color: 'from-sky-500 to-blue-600' },
-  { value: 'Cybersecurity Engineer', label: 'Cybersecurity', icon: '🔒', color: 'from-red-500 to-rose-600' },
-  { value: 'Mobile App Developer', label: 'Mobile Developer', icon: '📱', color: 'from-orange-500 to-amber-600' },
+  { value: 'AI/ML Engineer', label: 'AI/ML Engineer', Icon: Brain, color: 'from-[#b8860b] to-[#a0522d]' },
+  { value: 'Full Stack Web Developer', label: 'Full Stack Web Dev', Icon: Code2, color: 'from-[#c17817] to-[#8b4513]' },
+  { value: 'Data Analyst', label: 'Data Analyst', Icon: BarChart3, color: 'from-[#cd853f] to-[#8b5a2b]' },
+  { value: 'Cloud Engineer', label: 'Cloud Engineer', Icon: Cloud, color: 'from-[#d4a017] to-[#8b6914]' },
+  { value: 'Cybersecurity Engineer', label: 'Cybersecurity', Icon: ShieldCheck, color: 'from-[#8b5e34] to-[#5c3a21]' },
+  { value: 'Mobile App Developer', label: 'Mobile Developer', Icon: Smartphone, color: 'from-[#a67c3d] to-[#6b4423]' },
 ];
 
 const PRESET_SKILLS = [
@@ -29,8 +32,8 @@ const DEGREE_SUGGESTIONS = [
 ];
 
 const DEMO_USERS = [
-  { email: 'ali@careercompass.pk', password: 'password123', label: 'Ali Khan', sub: 'FAST CS Graduate · AI/ML Track', color: 'from-violet-500 to-purple-600', icon: '🎓' },
-  { email: 'sara@careercompass.pk', password: 'password123', label: 'Sara Ahmed', sub: 'Pre-Engineering · Web Dev Track', color: 'from-emerald-500 to-teal-600', icon: '🌟' },
+  { email: 'ali@careercompass.pk', password: 'password123', label: 'Ali Khan', sub: 'FAST CS Graduate · AI/ML Track', color: 'from-[#b8860b] to-[#a0522d]', Icon: GraduationCap },
+  { email: 'sara@careercompass.pk', password: 'password123', label: 'Sara Ahmed', sub: 'Pre-Engineering · Web Dev Track', color: 'from-[#cd853f] to-[#8b5a2b]', Icon: Star },
 ];
 
 function InputField({ id, icon: Icon, label, type = 'text', value, onChange, placeholder, error, hint, autoComplete }) {
@@ -82,7 +85,7 @@ function SkillTag({ skill, onRemove }) {
   );
 }
 
-export default function AuthModal({ open, onSuccess }) {
+export default function AuthModal({ open, onSuccess, onClose, initialMode = 'login' }) {
   const { t } = useLang();
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
   const [step, setStep] = useState(1);
@@ -110,7 +113,7 @@ export default function AuthModal({ open, onSuccess }) {
   const skillInputRef = useRef(null);
 
   const reset = () => {
-    setMode('login');
+    setMode(initialMode);
     setStep(1);
     setError('');
     setFieldErrors({});
@@ -120,6 +123,14 @@ export default function AuthModal({ open, onSuccess }) {
   };
 
   useEffect(() => { if (open) reset(); }, [open]);
+
+  // Close on Escape when a close handler is provided
+  useEffect(() => {
+    if (!open || !onClose) return;
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
 
   function addSkill(s) {
     const trimmed = s.trim();
@@ -203,6 +214,7 @@ export default function AuthModal({ open, onSuccess }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={onClose}
           className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         />
 
@@ -223,6 +235,16 @@ export default function AuthModal({ open, onSuccess }) {
               <h2 className="font-bold text-[#2d1a0e] text-lg leading-tight">CareerCompass</h2>
               <p className="text-xs text-[#9c7c5a]">{t('auth.welcomeBanner')}</p>
             </div>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label={t('auth.close')}
+                className="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl text-[#9c7c5a] hover:text-[#3d2b1f] hover:bg-[#f5ecd9] transition-colors"
+              >
+                <X size={18} />
+              </button>
+            )}
           </div>
 
           <div className="px-6 pb-6 pt-4">
@@ -255,7 +277,7 @@ export default function AuthModal({ open, onSuccess }) {
                   exit={{ opacity: 0, height: 0 }}
                   className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2"
                 >
-                  <span className="text-red-500 text-sm mt-0.5">⚠</span>
+                  <AlertTriangle size={15} className="text-red-500 mt-0.5 shrink-0" />
                   <p className="text-sm text-red-600">{error}</p>
                 </motion.div>
               )}
@@ -311,8 +333,8 @@ export default function AuthModal({ open, onSuccess }) {
                         disabled={loading}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-[#e0cdb8] bg-[#fdf8f0] hover:bg-[#f5ecd9] hover:border-[#b8860b]/40 transition-all text-left disabled:opacity-50"
                       >
-                        <span className={`w-9 h-9 rounded-lg bg-gradient-to-br ${demo.color} flex items-center justify-center text-lg shadow-sm`}>
-                          {demo.icon}
+                        <span className={`w-9 h-9 rounded-lg bg-gradient-to-br ${demo.color} flex items-center justify-center shadow-sm`}>
+                          <demo.Icon size={16} className="text-white" />
                         </span>
                         <div className="flex-1">
                           <div className="text-sm font-semibold text-[#2d1a0e]">{demo.label}</div>
@@ -476,9 +498,11 @@ export default function AuthModal({ open, onSuccess }) {
                                 : 'border-[#e0cdb8] text-[#9c7c5a] hover:border-[#b8860b]/40'
                             }`}
                           >
-                            <span className="text-base">{role.icon}</span>
+                            <span className={`w-6 h-6 rounded-md bg-gradient-to-br ${role.color} flex items-center justify-center shrink-0`}>
+                              <role.Icon size={13} className="text-white" />
+                            </span>
                             <span className="leading-tight">{role.label}</span>
-                            {targetRole === role.value && <CheckCircle2 size={13} className="ml-auto text-[#b8860b]" />}
+                            {targetRole === role.value && <CheckCircle2 size={13} className="ml-auto text-[#b8860b] shrink-0" />}
                           </button>
                         ))}
                       </div>

@@ -100,6 +100,7 @@
   },
   "market": {
     "title": "Pakistan Market Insights",
+    "demandChartTitle": "Market Demand & Industry Trends",
     "local": "Local Demand",
     "remote": "Remote Demand",
     "growth": "Growth Trend",
@@ -117,6 +118,7 @@
   },
   "plan": {
     "title": "4-Week Action Plan",
+    "downloadPdf": "Export Roadmap as PDF",
     "badge": "{n} tasks · 4 weeks",
     "portfolioTitle": "Recommended Portfolio Project",
     "techStack": "Tech Stack",
@@ -170,7 +172,29 @@
     "continue": "Continue to Education",
     "back": "Back",
     "finish": "Generate My Career Roadmap",
-    "welcomeBanner": "Real-time AI career guidance tailored specifically for you."
+    "welcomeBanner": "Real-time AI career guidance tailored specifically for you.",
+    "close": "Close"
+  },
+  "landing": {
+    "heroBody": "Sign up to get your personalised 4-week career roadmap, skill gap analysis, and real-time market insights — all powered by AI agents, 100% tailored to you.",
+    "howTitle": "How It Works",
+    "howSubtitle": "From student profile to a personalised plan — in four simple steps",
+    "stepBadge": "Step {n}",
+    "step1Title": "Share Your Profile",
+    "step1Desc": "Tell us your education, interests, and the skills you already have.",
+    "step2Title": "AI Agents Analyze",
+    "step2Desc": "Six specialised agents assess your skills and Pakistan's job market.",
+    "step3Title": "Roadmap Generated",
+    "step3Desc": "A personalised 4-week action plan with a portfolio project.",
+    "step4Title": "Track Weekly Progress",
+    "step4Desc": "Check off tasks and watch your readiness score grow.",
+    "agentsPreview": "Powered by 6 specialised agents",
+    "previewTitle": "See It In Action",
+    "previewSubtitle": "A live multi-agent pipeline, skill matrix, and weekly plan — all in one dashboard.",
+    "previewCaption": "Agent Command Center, from the actual product",
+    "free": "Free · No credit card required · Works for Pakistani students",
+    "builtFor": "Built for the Alibaba Cloud AI Hackathon Pakistan 2026",
+    "menu": "Menu"
   },
   "lang": {
     "label": "Language"

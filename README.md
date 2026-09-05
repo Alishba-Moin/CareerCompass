@@ -93,3 +93,65 @@ $$\text{Readiness Score} = \min\left(100, \text{Round}\left(\text{SkillMatchPct}
 * **Internationalization**: Custom Dictionary-based i18n Hook (English / Urdu RTL)
 
 ---
+# Installation & Setup Guide
+
+## Prerequisites
+* Node.js (v18 or higher)
+* npm (v9 or higher)
+
+---
+
+## 1. Clone & Install
+
+```bash
+# Clone the repository
+git clone [https://github.com/Alishba-Moin/CareerCompass.git](https://github.com/Alishba-Moin/CareerCompass.git)
+cd CareerCompass
+
+# Install root dependencies
+npm install
+
+# Install frontend dependencies
+cd frontend && npm install && cd ..
+
+```
+
+---
+
+## 2. Seed Database
+
+Run the following command to initialize the database and populate sample data:
+
+```bash
+npm run seed
+
+```
+
+---
+
+## 3. Run Application
+
+
+### Terminal 1 (Backend - Port 3000)
+
+```bash
+node server.js
+
+```
+
+### Terminal 2 (Frontend - Port 5173)
+
+```bash
+cd frontend
+npm run dev
+
+```
+
+---
+
+## Access URLs
+
+* **Frontend Dashboard:** `http://localhost:5173/`
+* **Backend Health Check:** `http://localhost:3000/api/health`
+
+```

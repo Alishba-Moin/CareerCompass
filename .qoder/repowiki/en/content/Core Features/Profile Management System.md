@@ -2,292 +2,432 @@
 
 <cite>
 **Referenced Files in This Document**
-- [index.html](file://index.html)
+- [ProfileCard.jsx](file://frontend/src/components/ProfileCard.jsx)
+- [EditProfileModal.jsx](file://frontend/src/components/EditProfileModal.jsx)
+- [api.js](file://routes/api.js)
+- [db.js](file://database/db.js)
+- [seed.js](file://database/seed.js)
+- [App.jsx](file://frontend/src/App.jsx)
+- [api.js](file://frontend/src/api.js)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated architecture section to reflect SQLite database integration and RESTful API endpoints
+- Added comprehensive database schema documentation with validation rules
+- Replaced client-side state management with server-side data persistence
+- Documented new API endpoints for profile CRUD operations
+- Updated component interactions to use async API calls instead of local state
+- Added error handling and validation throughout the data flow
 
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
-5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+5. [Database Schema and Data Persistence](#database-schema-and-data-persistence)
+6. [RESTful API Endpoints](#restful-api-endpoints)
+7. [Detailed Component Analysis](#detailed-component-analysis)
+8. [Data Flow and State Management](#data-flow-and-state-management)
+9. [Validation and Error Handling](#validation-and-error-handling)
+10. [Performance Considerations](#performance-considerations)
+11. [Troubleshooting Guide](#troubleshooting-guide)
+12. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the profile management system within a single-page prototype that showcases user data display and editing capabilities. It focuses on:
-- The profile card showing education level, current skills, interests, and career goal with visual indicators
-- The edit profile modal with form fields for education level, institution, skills input, interests, and a career question textarea
-- JavaScript functions openEditProfile() and closeEditProfile() that toggle modal visibility
-- CSS styling including glass morphism effects, gradient backgrounds, and responsive layout patterns
-- How profile data is structured and displayed, including skill tags color-coded by proficiency (emerald for strong skills, amber for developing skills)
-- Integration points between profile data and other features such as career readiness scoring and skill gap analysis
+This document explains the profile management system within Career Compass, which provides comprehensive user data display and editing capabilities backed by a persistent SQLite database. The system has evolved from a static prototype to a full-stack application featuring:
+
+- **SQLite Database Integration**: All profile data is now persisted in a SQLite database with proper schema validation
+- **RESTful API Endpoints**: Server-side endpoints handle all profile CRUD operations with comprehensive validation
+- **Real-time Data Synchronization**: Frontend components fetch and update data through asynchronous API calls
+- **Robust Error Handling**: Network failures, validation errors, and database exceptions are properly handled
+- **Persistent State**: User profiles survive page refreshes and application restarts
+
+The system focuses on displaying education level, current skills, interests, and career goals with visual indicators, while providing edit functionality through a modal interface that persists changes to the database.
 
 ## Project Structure
-The application is implemented as a single HTML file containing:
-- Inline Tailwind CSS via CDN for utility-first styling
-- Custom CSS for glass morphism, glow effects, animations, and score rings
-- A responsive grid-based layout with sections for profile, coach chat, multi-agent pipeline, skills gap analysis, market insights, action plan, and portfolio recommendations
-- An embedded script section handling chat interactions, pipeline animation, tab switching, modal toggling, and score counter animation
+The application follows a modern React + Express architecture with clear separation between frontend components and backend services:
 
 ```mermaid
 graph TB
-A["index.html"] --> B["Profile Section"]
-A --> C["Coach Chat Section"]
-A --> D["Multi-Agent Pipeline Section"]
-A --> E["Skills Gap Analysis Section"]
-A --> F["Market Insights Section"]
-A --> G["Action Plan Section"]
-A --> H["Portfolio Recommendations Section"]
-A --> I["Edit Profile Modal"]
+subgraph "Frontend (React)"
+A["ProfileCard.jsx"] --> B["EditProfileModal.jsx"]
+B --> C["App.jsx"]
+C --> D["api.js (Client)"]
+end
+subgraph "Backend (Express)"
+E["api.js (Server)"] --> F["db.js"]
+F --> G["SQLite Database"]
+end
+D --> E
+G --> H["career_compass.db"]
+subgraph "Database"
+I["students table"]
+J["progress_logs table"]
+K["roadmaps table"]
+L["market_signals table"]
+end
+F --> I
+F --> J
+F --> K
+F --> L
 ```
 
 **Section sources**
-- [index.html:1-684](file://index.html#L1-L684)
+- [ProfileCard.jsx:1-111](file://frontend/src/components/ProfileCard.jsx#L1-L111)
+- [EditProfileModal.jsx:1-180](file://frontend/src/components/EditProfileModal.jsx#L1-L180)
+- [api.js:1-176](file://routes/api.js#L1-L176)
+- [db.js:1-125](file://database/db.js#L1-L125)
 
 ## Core Components
-- Profile Card: Displays user identity, education level, current skills, interests, and career goal. Skills are shown as tags with color coding to indicate proficiency levels.
-- Edit Profile Modal: A glass-morphism overlay with form fields to update education level, institution, skills, interests, and career question. Toggled via openEditProfile() and closeEditProfile().
-- Career Readiness Score: A circular progress indicator reflecting an overall readiness metric derived from profile data and assessments.
-- Skill Match Panels: Show match percentages for different career paths (e.g., AI/ML vs Full Stack), indicating gaps and progress.
-- Skills Gap Analysis: Strengths and gaps presented with progress bars and color-coded metrics.
-- Market Insights: Local and remote job market data with tabs for switching views.
-- Multi-Agent Pipeline: Visual workflow showing agent roles and status during analysis runs.
-- Action Plan: Week-by-week checklist aligned with career goals and skill development.
-- Portfolio Recommendations: Suggested projects with tech stacks, timelines, and impact ratings.
+The profile management system consists of several key components that work together to provide a seamless user experience:
+
+### Profile Card Component
+- **Education Level Display**: Shows selectable chips for Intermediate and Graduate levels with visual indicators
+- **Skills Visualization**: Renders skill tags with appropriate styling based on proficiency context
+- **Interests Display**: Shows comma-separated interests as styled tags
+- **Career Goal Integration**: Displays career-related information for coaching recommendations
+
+### Edit Profile Modal
+- **Form Fields**: Education level selection, institution input, skills textarea, interests textarea
+- **Validation**: Client-side validation before sending data to server
+- **Persistence**: Saves changes via PATCH API endpoint with proper error handling
+- **User Experience**: Glass-morphism design with backdrop blur and smooth animations
+
+### Data Management Layer
+- **API Client**: Centralized fetch wrapper with JSON parsing and error handling
+- **State Management**: React hooks manage loading states, errors, and data synchronization
+- **Optimistic Updates**: UI updates immediately while waiting for server confirmation
 
 **Section sources**
-- [index.html:74-170](file://index.html#L74-L170)
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:315-390](file://index.html#L315-L390)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:460-516](file://index.html#L460-L516)
-- [index.html:529-562](file://index.html#L529-L562)
+- [ProfileCard.jsx:5-111](file://frontend/src/components/ProfileCard.jsx#L5-L111)
+- [EditProfileModal.jsx:11-180](file://frontend/src/components/EditProfileModal.jsx#L11-L180)
+- [App.jsx:82-388](file://frontend/src/App.jsx#L82-L388)
 
 ## Architecture Overview
-The profile management system integrates multiple UI components that share a common data context (profile attributes). While this prototype uses static markup, the structure supports dynamic updates where profile changes would cascade into:
-- Updated skill tags and proficiency indicators
-- Recalculated career readiness score
-- Adjusted skill match percentages and gap analysis
-- Refined market insights and recommended projects
+The profile management system follows a client-server architecture with SQLite database persistence:
 
 ```mermaid
-graph TB
-subgraph "Profile Data"
-P1["Education Level"]
-P2["Institution"]
-P3["Skills"]
-P4["Interests"]
-P5["Career Goal"]
-end
-subgraph "Display Components"
-PC["Profile Card"]
-CR["Career Readiness Score"]
-SM["Skill Match Panels"]
-SG["Skills Gap Analysis"]
-MI["Market Insights"]
-AP["Action Plan"]
-PR["Portfolio Recommendations"]
-end
-subgraph "Modal"
-EM["Edit Profile Modal"]
-end
-P1 --> PC
-P2 --> PC
-P3 --> PC
-P4 --> PC
-P5 --> PC
-P3 --> CR
-P3 --> SM
-P3 --> SG
-P4 --> MI
-P5 --> AP
-P3 --> PR
-EM --> P1
-EM --> P2
-EM --> P3
-EM --> P4
-EM --> P5
+sequenceDiagram
+participant U as "User"
+participant PC as "ProfileCard"
+participant EM as "EditProfileModal"
+participant APP as "App.jsx"
+participant API as "Client API"
+participant SRV as "Server API"
+participant DB as "SQLite Database"
+U->>PC : Click "Edit Profile"
+PC->>EM : Open modal with student data
+EM->>APP : onSave({education_level, interests, skills})
+APP->>API : updateStudent(id, fields)
+API->>SRV : PATCH /api/students/ : id
+SRV->>DB : UPDATE students SET ...
+DB-->>SRV : Updated record
+SRV-->>API : {student, skills}
+API-->>APP : Response data
+APP->>PC : Update profile card with new data
+APP->>EM : Close modal
 ```
 
-[No sources needed since this diagram shows conceptual relationships, not specific code structure]
+**Diagram sources**
+- [App.jsx:280-303](file://frontend/src/App.jsx#L280-L303)
+- [api.js:54-63](file://routes/api.js#L54-L63)
+- [db.js:36-39](file://database/db.js#L36-L39)
+
+The architecture ensures data consistency through:
+- **Server-side Validation**: All input is validated before database updates
+- **Atomic Operations**: Database transactions ensure data integrity
+- **Error Propagation**: Errors bubble up from database to UI with meaningful messages
+- **State Synchronization**: Frontend state stays synchronized with database state
+
+## Database Schema and Data Persistence
+The system uses SQLite with a well-defined schema that enforces data integrity through constraints:
+
+### Students Table Schema
+```sql
+CREATE TABLE students (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  education_level TEXT NOT NULL CHECK(education_level IN ('Intermediate','Graduate')),
+  stream_or_degree TEXT,
+  interests TEXT,
+  skills TEXT DEFAULT '[]',
+  skill_match_pct REAL DEFAULT 0,
+  remote_demand_pct REAL DEFAULT 0,
+  readiness_score INTEGER DEFAULT 0 CHECK(readiness_score BETWEEN 0 AND 100)
+)
+```
+
+### Key Features
+- **Data Types**: Proper typing with TEXT for strings, REAL for percentages, INTEGER for scores
+- **Constraints**: CHECK constraints enforce valid values (education levels, score ranges)
+- **Default Values**: sensible defaults for optional fields like skills array
+- **Foreign Keys**: Referential integrity maintained across related tables
+
+### Data Persistence Strategy
+- **Automatic Saving**: All write operations automatically persist to disk
+- **Schema Migration**: Database schema is created if it doesn't exist
+- **Seed Data**: Initial data populated through seed script for development
+- **Backup Support**: Database file can be backed up and restored
+
+**Section sources**
+- [db.js:71-84](file://database/db.js#L71-L84)
+- [seed.js:43-79](file://database/seed.js#L43-L79)
+
+## RESTful API Endpoints
+The backend exposes RESTful endpoints for profile management with comprehensive validation:
+
+### Profile Management Endpoints
+
+#### GET /api/students
+Returns all students for the student switcher functionality.
+
+#### GET /api/students/:id
+Returns detailed student profile including skills array and progress statistics.
+
+#### PATCH /api/students/:id
+Updates profile fields with strict validation:
+- **education_level**: Must be "Intermediate" or "Graduate"
+- **interests**: Must be a string
+- **skills**: Must be an array of strings
+
+### Additional Endpoints
+- **POST /api/coach/analyze**: Runs multi-agent pipeline analysis
+- **POST /api/progress/toggle**: Toggles task status and recalculates readiness score
+
+### Request/Response Examples
+```javascript
+// Update profile request
+PATCH /api/students/1
+{
+  "education_level": "Graduate",
+  "interests": "AI, Machine Learning, Web Dev",
+  "skills": ["Python", "JavaScript", "React"]
+}
+
+// Success response
+{
+  "id": 1,
+  "name": "Ali Khan",
+  "education_level": "Graduate",
+  "stream_or_degree": "BS Computer Science — FAST NUCES, Islamabad",
+  "interests": "AI, Machine Learning, Web Dev",
+  "skills": ["Python", "JavaScript", "React"],
+  "skill_match_pct": 25,
+  "remote_demand_pct": 92,
+  "readiness_score": 43
+}
+```
+
+**Section sources**
+- [api.js:18-21](file://routes/api.js#L18-L21)
+- [api.js:27-69](file://routes/api.js#L27-L69)
+- [api.js:74-112](file://routes/api.js#L74-L112)
 
 ## Detailed Component Analysis
 
 ### Profile Card Implementation
-- Education Level: Presented as selectable or highlighted chips; one chip indicates the active level.
-- Current Skills: Rendered as tags with color coding:
-  - Emerald tags denote strong skills
-  - Amber tags denote developing skills
-- Interests: Displayed as sky-colored tags for clarity and distinction
-- Career Goal: Shown as a concise statement guiding coaching and planning
+The ProfileCard component displays student information with dynamic styling based on data:
 
 ```mermaid
 flowchart TD
-Start(["Render Profile Card"]) --> Edu["Show Education Level Chips"]
-Edu --> Skills["Render Skill Tags<br/>Color by Proficiency"]
-Skills --> Interests["Render Interest Tags"]
-Interests --> Goal["Display Career Goal Text"]
-Goal --> End(["Card Complete"])
+Start(["Render Profile Card"]) --> Check{"Student Data?"}
+Check --> |No| Return["Return null"]
+Check --> |Yes| Process["Process Student Data"]
+Process --> Skills["Parse Skills Array"]
+Process --> Interests["Split Interests String"]
+Process --> Levels["Generate Education Level Chips"]
+Levels --> Render["Render UI Components"]
+Skills --> Render
+Interests --> Render
+Render --> End(["Display Profile Card"])
 ```
 
+**Key Features:**
+- **Dynamic Skill Tags**: Skills rendered as styled tags with consistent formatting
+- **Education Level Badges**: Visual indicators showing current education level
+- **Interest Tags**: Comma-separated interests displayed as individual tags
+- **Responsive Design**: Adapts to different screen sizes gracefully
+
 **Section sources**
-- [index.html:77-121](file://index.html#L77-L121)
+- [ProfileCard.jsx:5-111](file://frontend/src/components/ProfileCard.jsx#L5-L111)
 
 ### Edit Profile Modal Functionality
-- Fields:
-  - Education Level: Select dropdown
-  - Institution: Text input
-  - Skills: Comma-separated text input
-  - Interests: Text input
-  - Career Question: Textarea
-- Visibility Control:
-  - openEditProfile(): Removes hidden class to show modal
-  - closeEditProfile(): Adds hidden class to hide modal
-- Styling: Glass-morphism background, backdrop blur, rounded corners, and glow effect
+The modal provides a comprehensive interface for editing profile data:
 
 ```mermaid
 sequenceDiagram
 participant User as "User"
-participant Card as "Profile Card"
-participant Modal as "Edit Profile Modal"
-participant Script as "JavaScript"
-User->>Card : Click "Edit Profile"
-Card->>Script : Call openEditProfile()
-Script->>Modal : Remove 'hidden' class
-Note over Modal : Modal becomes visible
-User->>Modal : Submit changes
-Modal->>Script : Call closeEditProfile()
-Script->>Modal : Add 'hidden' class
-Note over Modal : Modal hides after save
+participant Modal as "EditProfileModal"
+participant Form as "Form State"
+participant API as "updateStudent API"
+participant App as "App State"
+User->>Modal : Open modal
+Modal->>Form : Initialize form state
+Note over Form : Pre-fill with current student data
+User->>Form : Modify fields
+Form->>Form : Validate inputs locally
+User->>Modal : Submit form
+Modal->>API : Send PATCH request
+API->>App : Update success/error state
+App->>Modal : Close modal on success
 ```
 
-**Diagram sources**
-- [index.html:118-120](file://index.html#L118-L120)
-- [index.html:529-562](file://index.html#L529-L562)
-- [index.html:667-669](file://index.html#L667-L669)
+**Form Fields:**
+- **Education Level**: Radio buttons for Intermediate/Graduate selection
+- **Institution**: Text input for educational institution
+- **Skills**: Textarea for comma-separated skill list
+- **Interests**: Textarea for interest areas
+- **Career Question**: Textarea for career guidance questions
 
 **Section sources**
-- [index.html:529-562](file://index.html#L529-L562)
-- [index.html:667-669](file://index.html#L667-L669)
+- [EditProfileModal.jsx:11-180](file://frontend/src/components/EditProfileModal.jsx#L11-L180)
 
-### CSS Styling: Glass Morphism, Gradients, and Responsive Layout
-- Glass Morphism: Semi-transparent backgrounds with backdrop blur and subtle borders create depth and modern aesthetics
-- Glow Effects: Box shadows add emphasis to cards and interactive elements
-- Gradient Backgrounds: Brand gradients used for avatars, buttons, and highlights
-- Responsive Patterns: Grid layouts adapt across breakpoints; sections reflow on smaller screens
-- Animations: Slide-up transitions for modals and messages; pulsing dots for typing indicators; animated score counter
+### CSS Styling and Visual Design
+The system employs modern CSS techniques for an engaging user interface:
 
-```mermaid
-flowchart TD
-A["Base Styles"] --> B["Glass Cards<br/>backdrop-filter + border"]
-B --> C["Glow Shadows<br/>box-shadow accents"]
-C --> D["Gradients<br/>brand colors for highlights"]
-D --> E["Responsive Grid<br/>flex/grid utilities"]
-E --> F["Animations<br/>slide-up, pulse, typing"]
-```
+- **Glass Morphism Effects**: Semi-transparent backgrounds with backdrop blur create depth
+- **Gradient Backgrounds**: Brand gradients used for avatars and interactive elements
+- **Responsive Layout**: Grid-based layouts that adapt across breakpoints
+- **Animation Effects**: Smooth transitions for modals, hover states, and loading indicators
+- **Color Coding**: Consistent color scheme for different data types and states
 
 **Section sources**
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:45-70](file://index.html#L45-L70)
-- [index.html:529-562](file://index.html#L529-L562)
+- [ProfileCard.jsx:22-28](file://frontend/src/components/ProfileCard.jsx#L22-L28)
+- [EditProfileModal.jsx:54-71](file://frontend/src/components/EditProfileModal.jsx#L54-L71)
 
-### Skill Tags and Color Coding
-- Strong Skills: Emerald tags indicate proficiency and confidence
-- Developing Skills: Amber tags highlight areas for growth
-- Interests: Sky tags differentiate personal interests from technical skills
-- Visual Indicators: Borders and background opacities provide clear hierarchy and readability
+## Data Flow and State Management
+The system implements a unidirectional data flow pattern with proper state synchronization:
 
-```mermaid
-flowchart TD
-Start(["Parse Skills List"]) --> Classify{"Proficiency?"}
-Classify --> |Strong| Emerald["Apply Emerald Tag Style"]
-Classify --> |Developing| Amber["Apply Amber Tag Style"]
-Emerald --> Render["Render Tag in UI"]
-Amber --> Render
-Render --> End(["Tag Visible"])
-```
-
-**Section sources**
-- [index.html:95-103](file://index.html#L95-L103)
-
-### Integration with Career Readiness Scoring and Skill Gap Analysis
-- Career Readiness Score: Reflects overall preparedness based on skills, interests, and goals; updated when profile changes
-- Skill Match Panels: Compute match percentages for different career paths using current skills and target requirements
-- Skills Gap Analysis: Compares strengths against gaps to inform learning priorities and project recommendations
-- Market Insights: Aligns local and remote opportunities with skills and interests to guide decisions
-
-```mermaid
-sequenceDiagram
-participant Profile as "Profile Data"
-participant Score as "Readiness Score"
-participant Matches as "Skill Match Panels"
-participant Gaps as "Skills Gap Analysis"
-Profile->>Score : Update skills/education/goals
-Score-->>Profile : New readiness value
-Profile->>Matches : Re-evaluate path matches
-Matches-->>Profile : Updated percentages
-Profile->>Gaps : Recompute strengths/gaps
-Gaps-->>Profile : Revised gap list
-```
-
-**Section sources**
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:283-313](file://index.html#L283-L313)
-
-## Dependency Analysis
-- UI Dependencies:
-  - Tailwind CSS via CDN provides utility classes for layout, spacing, typography, and colors
-  - Google Fonts (Inter) ensures consistent typography
-- Internal Dependencies:
-  - Profile card depends on skill tag rendering logic
-  - Modal depends on JavaScript functions for visibility control
-  - Score and panels depend on profile data for calculations
-- External Integrations:
-  - No backend APIs are connected in this prototype; all data is static but structured for future integration
-
+### State Management Architecture
 ```mermaid
 graph LR
-Tailwind["Tailwind CSS (CDN)"] --> UI["UI Components"]
-Fonts["Google Fonts (Inter)"] --> UI
-UI --> ProfileCard["Profile Card"]
-UI --> Modal["Edit Profile Modal"]
-UI --> ScorePanel["Career Readiness Score"]
-UI --> SkillMatch["Skill Match Panels"]
-UI --> GapAnalysis["Skills Gap Analysis"]
+subgraph "Frontend State"
+A["studentId"] --> B["student"]
+B --> C["analysis"]
+B --> D["editOpen"]
+B --> E["editSaving"]
+B --> F["editError"]
+end
+subgraph "Server State"
+G["SQLite Database"]
+H["Students Table"]
+I["Progress Logs"]
+end
+subgraph "API Layer"
+J["fetchStudent()"]
+K["updateStudent()"]
+L["toggleTask()"]
+end
+A --> J
+D --> K
+E --> L
+J --> G
+K --> H
+L --> I
+G --> J
+H --> K
+I --> L
+```
+
+### Data Synchronization Patterns
+- **Lazy Loading**: Student data loaded on demand when selected
+- **Optimistic Updates**: UI updates immediately, then syncs with server
+- **Error Recovery**: Failed operations revert UI state to previous valid state
+- **Cache Invalidation**: Related data refreshed when primary data changes
+
+**Section sources**
+- [App.jsx:82-164](file://frontend/src/App.jsx#L82-L164)
+- [App.jsx:280-303](file://frontend/src/App.jsx#L280-L303)
+
+## Validation and Error Handling
+Comprehensive validation and error handling ensure data integrity and user experience:
+
+### Client-Side Validation
+- **Form Validation**: Real-time validation of user inputs before submission
+- **Type Checking**: Ensures correct data types for API requests
+- **Empty Field Handling**: Graceful handling of missing or empty values
+
+### Server-Side Validation
+- **Input Sanitization**: All user inputs sanitized before processing
+- **Constraint Enforcement**: Database constraints prevent invalid data insertion
+- **Business Logic Validation**: Complex rules enforced at API layer
+
+### Error Handling Strategy
+```mermaid
+flowchart TD
+Start(["User Action"]) --> Try{"Try Operation"}
+Try --> |Success| Update["Update UI State"]
+Try --> |Network Error| NetworkErr["Handle Network Error"]
+Try --> |Validation Error| ValidationErr["Handle Validation Error"]
+Try --> |Database Error| DBErr["Handle Database Error"]
+NetworkErr --> ShowMsg["Show Network Error Message"]
+ValidationErr --> ShowMsg
+DBErr --> ShowMsg
+ShowMsg --> Log["Log Error Details"]
+Log --> Recover["Attempt Recovery"]
+Recover --> End(["Operation Complete"])
 ```
 
 **Section sources**
-- [index.html:7-21](file://index.html#L7-L21)
-- [index.html:22-43](file://index.html#L22-L43)
+- [api.js:27-69](file://routes/api.js#L27-L69)
+- [api.js:74-112](file://routes/api.js#L74-L112)
+- [App.jsx:280-303](file://frontend/src/App.jsx#L280-L303)
 
 ## Performance Considerations
-- Minimal DOM Manipulation: Modal toggling uses simple class changes for performance
-- Efficient Rendering: Static markup avoids heavy reflows; dynamic content limited to chat and pipeline animations
-- Animation Optimization: Use requestAnimationFrame for score counter; CSS animations for lightweight effects
-- Scalability: Structured data model allows efficient updates without full page reloads
+The system is optimized for performance through several strategies:
 
-[No sources needed since this section provides general guidance]
+### Database Optimization
+- **Indexed Queries**: Primary keys and foreign keys automatically indexed
+- **Efficient Updates**: COALESCE function minimizes unnecessary writes
+- **Connection Pooling**: Single database connection reused throughout application lifecycle
+
+### Frontend Optimization
+- **Component Memoization**: React.memo and useMemo prevent unnecessary re-renders
+- **Lazy Loading**: Data fetched only when needed
+- **Debounced Updates**: Frequent updates batched for efficiency
+
+### Network Optimization
+- **Request Deduplication**: Prevents duplicate API calls for same data
+- **Caching Strategy**: Client-side caching reduces network requests
+- **Error Retry Logic**: Automatic retry for transient network failures
 
 ## Troubleshooting Guide
-- Modal Not Opening/Closing:
-  - Ensure openEditProfile() and closeEditProfile() are correctly bound to button onclick handlers
-  - Verify the modal element ID matches the selector in JavaScript
-- Skill Tags Not Updating:
-  - Confirm skills input parsing logic splits by commas and assigns correct proficiency classes
-- Score Not Animating:
-  - Check that the score element ID exists and the animation function targets it
-- Tab Switching Issues:
-  - Validate that market-local and market-remote containers have correct IDs and classes
+Common issues and their solutions:
+
+### Database Connection Issues
+- **Symptom**: "Database not initialized" error
+- **Solution**: Ensure `initDatabase()` is called before any database operations
+- **Prevention**: Initialize database during application startup
+
+### API Endpoint Errors
+- **Symptom**: 404 Not Found for student ID
+- **Solution**: Verify student exists in database before making requests
+- **Prevention**: Implement existence checks before API calls
+
+### Data Validation Errors
+- **Symptom**: 400 Bad Request with validation message
+- **Solution**: Check input format matches expected schema
+- **Prevention**: Implement client-side validation matching server rules
+
+### State Synchronization Issues
+- **Symptom**: UI shows stale data after updates
+- **Solution**: Ensure proper state updates after successful API calls
+- **Prevention**: Use optimistic updates with rollback on failure
 
 **Section sources**
-- [index.html:667-669](file://index.html#L667-L669)
-- [index.html:671-680](file://index.html#L671-L680)
-- [index.html:659-665](file://index.html#L659-L665)
+- [db.js:17-19](file://database/db.js#L17-L19)
+- [api.js:27-36](file://routes/api.js#L27-L36)
+- [App.jsx:280-303](file://frontend/src/App.jsx#L280-L303)
 
 ## Conclusion
-The profile management system provides a cohesive interface for displaying and editing user profile data with clear visual indicators and responsive design. The integration points with career readiness scoring and skill gap analysis enable personalized guidance and actionable insights. The architecture supports future enhancements through modular data binding and dynamic updates while maintaining a clean, performant user experience.
+The Profile Management System has evolved from a static prototype to a robust, database-backed application that provides reliable user profile management with persistent storage. The integration of SQLite database, RESTful API endpoints, and comprehensive validation ensures data integrity while maintaining an excellent user experience.
 
-[No sources needed since this section summarizes without analyzing specific files]
+Key achievements include:
+- **Persistent Data Storage**: All profile information survives application restarts
+- **Scalable Architecture**: Clean separation between frontend and backend concerns
+- **Robust Error Handling**: Comprehensive error detection and recovery mechanisms
+- **User-Friendly Interface**: Intuitive editing interface with real-time feedback
+- **Performance Optimization**: Efficient data loading and rendering strategies
+
+The system provides a solid foundation for future enhancements such as user authentication, advanced analytics, and integration with external career resources. The modular architecture allows for easy extension and maintenance while ensuring data consistency across all components.

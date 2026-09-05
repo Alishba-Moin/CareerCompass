@@ -2,8 +2,25 @@
 
 <cite>
 **Referenced Files in This Document**
-- [index.html](file://index.html)
+- [skillAssessmentAgent.js](file://agents/skillAssessmentAgent.js)
+- [skillAssessmentAgent.test.js](file://agents/skillAssessmentAgent.test.js)
+- [careerCoachOrchestrator.js](file://agents/careerCoachOrchestrator.js)
+- [db.js](file://database/db.js)
+- [seed.js](file://database/seed.js)
+- [api.js](file://routes/api.js)
+- [App.jsx](file://frontend/src/App.jsx)
+- [SkillsSection.jsx](file://frontend/src/components/SkillsSection.jsx)
+- [ScorePanel.jsx](file://frontend/src/components/ScorePanel.jsx)
+- [PlanSection.jsx](file://frontend/src/components/PlanSection.jsx)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated skills assessment architecture to use dedicated skillAssessmentAgent.js with deterministic gap matrix calculations
+- Added persistent database storage integration for skill assessments and career path data
+- Enhanced dual-panel layout with dynamic skill matching against target role requirements
+- Integrated progress tracking with readiness score recalculation based on task completion
+- Updated API endpoints to support real-time skill assessment and progress updates
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -18,298 +35,352 @@
 10. [Appendices](#appendices)
 
 ## Introduction
-This document explains the Skills Analysis Dashboard focused on strength identification and gap detection visualization. It covers the dual-panel layout that presents “Strengths” (existing skills with high proficiency) and “Gaps to Close” (skills needing development), including progress bars, percentage indicators, color coding, and accessibility considerations. It also describes how this data integrates with career path recommendations and action planning features within the application.
+This document explains the Skills Analysis Dashboard focused on strength identification and gap detection visualization through a sophisticated multi-agent system. The dashboard now features a dedicated skill assessment agent that performs deterministic gap matrix calculations against target role requirements, backed by persistent SQLite database storage. It covers the dual-panel layout that presents "Strengths" (existing skills with high proficiency) and "Gaps to Close" (skills needing development), including progress bars, percentage indicators, color coding, and accessibility considerations. The system integrates seamlessly with career path recommendations and action planning features within the application.
 
 ## Project Structure
-The dashboard is implemented as a single-page HTML file using Tailwind CSS for styling and minimal inline JavaScript for interactivity. The key sections relevant to skills analysis are:
-- A dual-panel section displaying Strengths and Gaps with per-skill progress bars and percentages
-- Career readiness and skill match metrics that contextualize strengths and gaps
-- An action plan section that translates identified gaps into weekly tasks
-- Market insights that inform which gaps matter most for local and remote opportunities
+The dashboard is implemented as a React-based single-page application with a sophisticated backend architecture featuring multiple specialized agents and persistent data storage:
+
+### Frontend Components
+- **SkillsSection**: Dual-panel view displaying strengths and gaps with animated transitions
+- **ScorePanel**: Career readiness scoring with animated progress rings and metrics
+- **PlanSection**: 4-week action plan with interactive task management
+- **MarketSection**: Local and remote market demand insights
+
+### Backend Architecture
+- **Skill Assessment Agent**: Deterministic skill matching with case-insensitive normalization
+- **Career Coach Orchestrator**: Multi-agent pipeline coordination
+- **Database Layer**: SQLite storage with comprehensive schema for students, market signals, and progress tracking
+- **API Endpoints**: RESTful interfaces for student management and analysis pipelines
 
 ```mermaid
 graph TB
-A["Skills Section<br/>Dual Panels"] --> B["Strengths Panel<br/>Progress Bars + %"]
-A --> C["Gaps Panel<br/>Progress Bars + %"]
-D["Career Readiness & Match Metrics"] --> A
-E["Action Plan (Weeks 1–4)"] --> C
-F["Market Insights<br/>Local/Remote Demand"] --> C
+A["Frontend App"] --> B["Skills Section<br/>Dual Panels"]
+A --> C["Score Panel<br/>Readiness Metrics"]
+A --> D["Plan Section<br/>Action Tasks"]
+B --> E["Backend API"]
+C --> E
+D --> E
+E --> F["Career Coach Orchestrator"]
+F --> G["Skill Assessment Agent"]
+F --> H["Market Intelligence"]
+F --> I["Roadmap Generator"]
+G --> J["SQLite Database"]
+H --> J
+I --> J
 ```
 
 **Diagram sources**
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [App.jsx:317-361](file://frontend/src/App.jsx#L317-L361)
+- [careerCoachOrchestrator.js:210-244](file://agents/careerCoachOrchestrator.js#L210-L244)
+- [db.js:59-125](file://database/db.js#L59-L125)
 
 **Section sources**
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [App.jsx:317-361](file://frontend/src/App.jsx#L317-L361)
+- [careerCoachOrchestrator.js:210-244](file://agents/careerCoachOrchestrator.js#L210-L244)
+- [db.js:59-125](file://database/db.js#L59-L125)
 
 ## Core Components
-- Dual-panel skills view:
-  - Strengths panel lists existing skills with high proficiency and shows progress bars colored emerald with percentage labels
-  - Gaps panel lists skills needing development and shows progress bars colored rose or amber with percentage labels
-- Progress bars:
-  - Implemented via inline styles setting width percentages and background colors
-  - Each row includes a skill label, a percentage indicator, and a visual bar
-- Color coding system:
-  - Emerald for strengths indicating higher proficiency levels
-  - Rose/amber for gaps indicating lower proficiency and areas requiring attention
-- Integration points:
-  - Skill match metrics provide context for overall readiness and highlight specific gaps
-  - Action plan converts gaps into concrete weekly tasks
-  - Market insights prioritize gaps based on demand signals
+The enhanced skills analysis system now features a dedicated skill assessment agent with persistent storage capabilities:
+
+### Skill Assessment Agent
+- **Deterministic Matching**: Case-insensitive skill comparison with exact string matching
+- **Gap Matrix Calculation**: Compares student skills against target role requirements
+- **Persistent Storage**: All assessments stored in SQLite database with timestamps
+- **Real-time Updates**: Progress tracking with automatic readiness score recalculation
+
+### Enhanced Dual-Panel Layout
+- **Strengths Panel**: Dynamic display of matched skills with gold accents and checkmark indicators
+- **Gaps Panel**: Targeted learning areas with brown accents and circular indicators
+- **Match Percentage**: Overall skill match score displayed prominently in both panels
+- **Animated Transitions**: Smooth entry animations using Framer Motion
+
+### Progress Integration
+- **Task Completion Tracking**: Interactive checkboxes with optimistic UI updates
+- **Readiness Score Calculation**: Formula-based scoring incorporating skill match, market demand, and task completion
+- **Progress Persistence**: All task states saved to database with completion timestamps
 
 **Section sources**
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [skillAssessmentAgent.js:34-73](file://agents/skillAssessmentAgent.js#L34-L73)
+- [SkillsSection.jsx:26-129](file://frontend/src/components/SkillsSection.jsx#L26-L129)
+- [ScorePanel.jsx:95-159](file://frontend/src/components/ScorePanel.jsx#L95-L159)
 
 ## Architecture Overview
-The dashboard organizes information to guide users from assessment to action:
-- Assessment: Strengths and Gaps panels visualize current skill levels
-- Context: Career readiness score and skill match percentages frame the user’s standing
-- Planning: Weekly action items translate gaps into actionable steps
-- Market alignment: Local and remote demand informs prioritization of gaps
+The enhanced architecture implements a sophisticated multi-agent pipeline with persistent data storage:
 
+### Pipeline Execution Flow
+1. **Student Profile Loading**: Fetches student data from SQLite database
+2. **Target Role Resolution**: Identifies appropriate career path based on query and profile
+3. **Skill Assessment**: Executes deterministic gap matrix calculation
+4. **Market Intelligence**: Retrieves local and remote demand data
+5. **Roadmap Generation**: Creates personalized 4-week action plan
+6. **Progress Tracking**: Monitors task completion and recalculates readiness scores
+
+### Data Flow Architecture
 ```mermaid
 sequenceDiagram
-participant User as "User"
-participant Skills as "Skills Panels"
-participant Metrics as "Readiness & Match"
-participant Plan as "Action Plan"
-participant Market as "Market Insights"
-User->>Skills : View strengths and gaps
-Skills-->>User : Progress bars + percentages
-User->>Metrics : Review readiness and match
-Metrics-->>User : Scores and gap counts
-User->>Plan : Open weekly tasks
-Plan-->>User : Checklists aligned to gaps
-User->>Market : Switch tabs (local/remote)
-Market-->>User : Demand signals and salaries
+participant FE as "Frontend"
+participant API as "API Layer"
+participant Orchestrator as "Career Coach Orchestrator"
+participant SkillAgent as "Skill Assessment Agent"
+participant DB as "SQLite Database"
+FE->>API : POST /coach/analyze
+API->>Orchestrator : runPipeline(studentId, query)
+Orchestrator->>DB : SELECT student profile
+DB-->>Orchestrator : Student data + skills
+Orchestrator->>SkillAgent : evaluateSkills(studentSkills, requiredSkills)
+SkillAgent->>SkillAgent : Normalize & compare skills
+SkillAgent-->>Orchestrator : {strengths, gaps, matchPercentage}
+Orchestrator->>DB : INSERT/UPDATE progress logs
+DB-->>Orchestrator : Confirmation
+Orchestrator-->>API : Complete analysis result
+API-->>FE : JSON response with all components
 ```
 
 **Diagram sources**
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [careerCoachOrchestrator.js:210-244](file://agents/careerCoachOrchestrator.js#L210-L244)
+- [skillAssessmentAgent.js:34-73](file://agents/skillAssessmentAgent.js#L34-L73)
+- [db.js:36-53](file://database/db.js#L36-L53)
+
+**Section sources**
+- [careerCoachOrchestrator.js:210-244](file://agents/careerCoachOrchestrator.js#L210-L244)
+- [skillAssessmentAgent.js:34-73](file://agents/skillAssessmentAgent.js#L34-L73)
+- [db.js:36-53](file://database/db.js#L36-L53)
 
 ## Detailed Component Analysis
 
-### Strengths Panel
-- Purpose: Show existing skills where proficiency is strong
-- Visuals:
-  - Each skill has a label, a percentage indicator, and an emerald progress bar
-  - Percentages reflect relative mastery; higher values indicate stronger capability
-- Example skills tracked:
-  - JavaScript / ES6+
-  - React.js
-  - Python
-  - SQL / Databases
-  - Git / Version Control
-- Implementation notes:
-  - Inline styles set width percentages for each bar
-  - Colors use emerald tones to signal strengths
+### Skill Assessment Agent Implementation
+The dedicated skill assessment agent provides deterministic gap matrix calculations:
+
+#### Core Algorithm
+- **Normalization Function**: Trims whitespace and converts to lowercase for consistent matching
+- **Set-based Lookup**: Uses JavaScript Set for O(1) skill comparison performance
+- **Case Preservation**: Maintains original casing from target role requirements in output
+- **Percentage Calculation**: Rounds match percentage to nearest integer for clean display
+
+#### Test Coverage
+Comprehensive test suite validates:
+- Basic skill matching scenarios
+- Case-insensitive matching behavior
+- Edge cases (empty arrays, perfect matches)
+- Deterministic output consistency across multiple calls
 
 ```mermaid
 flowchart TD
-Start(["Strengths Entry"]) --> Row1["JavaScript / ES6+ — 85%"]
-Row1 --> Bar1["Emerald progress bar width 85%"]
-Start --> Row2["React.js — 78%"]
-Row2 --> Bar2["Emerald progress bar width 78%"]
-Start --> Row3["Python — 72%"]
-Row3 --> Bar3["Emerald progress bar width 72%"]
-Start --> Row4["SQL / Databases — 65%"]
-Row4 --> Bar4["Emerald progress bar width 65%"]
-Start --> Row5["Git / Version Control — 70%"]
-Row5 --> Bar5["Emerald progress bar width 70%"]
+Start(["evaluateSkills Input"]) --> Normalize["Normalize student skills<br/>(lowercase + trim)"]
+Normalize --> CreateSet["Create Set lookup table"]
+CreateSet --> FilterStrengths["Filter target skills present in student skills"]
+CreateSet --> FilterGaps["Filter target skills missing from student skills"]
+FilterStrengths --> CalculatePct["Calculate match percentage"]
+FilterGaps --> CalculatePct
+CalculatePct --> ReturnResult["Return {strengths, gaps, matchPercentage}"]
 ```
 
 **Diagram sources**
-- [index.html:291-297](file://index.html#L291-L297)
+- [skillAssessmentAgent.js:16-18](file://agents/skillAssessmentAgent.js#L16-L18)
+- [skillAssessmentAgent.js:49-63](file://agents/skillAssessmentAgent.js#L49-L63)
 
 **Section sources**
-- [index.html:291-297](file://index.html#L291-L297)
+- [skillAssessmentAgent.js:16-18](file://agents/skillAssessmentAgent.js#L16-L18)
+- [skillAssessmentAgent.js:49-63](file://agents/skillAssessmentAgent.js#L49-L63)
+- [skillAssessmentAgent.test.js:37-148](file://agents/skillAssessmentAgent.test.js#L37-L148)
 
-### Gaps Panel
-- Purpose: Highlight skills that need development
-- Visuals:
-  - Each skill has a label, a percentage indicator, and a rose or amber progress bar
-  - Lower percentages indicate greater need for improvement
-- Example skills tracked:
-  - TensorFlow / PyTorch
-  - Data Preprocessing / Pandas
-  - Node.js / Express
-  - Docker / DevOps Basics
-  - System Design Basics
-- Implementation notes:
-  - Inline styles set width percentages for each bar
-  - Colors use rose/amber tones to signal gaps
+### Enhanced Skills Section Component
+The frontend component now displays dynamic skill analysis results:
 
-```mermaid
-flowchart TD
-Start(["Gaps Entry"]) --> Gap1["TensorFlow / PyTorch — 15%"]
-Gap1 --> Bar1["Rose progress bar width 15%"]
-Start --> Gap2["Data Preprocessing / Pandas — 30%"]
-Gap2 --> Bar2["Amber progress bar width 30%"]
-Start --> Gap3["Node.js / Express — 35%"]
-Gap3 --> Bar3["Amber progress bar width 35%"]
-Start --> Gap4["Docker / DevOps Basics — 10%"]
-Gap4 --> Bar4["Rose progress bar width 10%"]
-Start --> Gap5["System Design Basics — 20%"]
-Gap5 --> Bar5["Rose progress bar width 20%"]
-```
+#### Visual Design Elements
+- **Gold Accents**: Strengths panel uses gold color scheme with trophy icon
+- **Brown Accents**: Gaps panel uses brown color scheme with target icon
+- **Match Badge**: Prominent display of overall match percentage
+- **Empty States**: Graceful handling when no skills or gaps are found
 
-**Diagram sources**
-- [index.html:305-311](file://index.html#L305-L311)
+#### Animation Features
+- **Staggered Entry**: Cards animate in sequence with smooth transitions
+- **Hover Effects**: Interactive elements respond to user interaction
+- **Viewport Detection**: Animations trigger when elements enter viewport
 
 **Section sources**
-- [index.html:305-311](file://index.html#L305-L311)
+- [SkillsSection.jsx:26-129](file://frontend/src/components/SkillsSection.jsx#L26-L129)
 
-### Progress Bars and Color Coding
-- Progress bars:
-  - Use inline styles to set width percentages corresponding to skill proficiency
-  - Background colors differentiate strengths (emerald) from gaps (rose/amber)
-- Percentage indicators:
-  - Displayed next to skill names for quick comprehension
-- Accessibility:
-  - Ensure sufficient contrast between text and backgrounds
-  - Provide descriptive labels for screen readers (e.g., aria attributes would be ideal if added)
-  - Avoid relying solely on color; include text percentages and clear headings
+### Database Integration and Persistence
+The system now maintains persistent state through SQLite database:
 
-```mermaid
-flowchart TD
-Input["Skill Proficiency (%)"] --> Width["Set inline style width"]
-Input --> Color{"Strength or Gap?"}
-Color --> |Strength| Emerald["Use emerald background"]
-Color --> |Gap| RoseAmber["Use rose/amber background"]
-Width --> Render["Render progress bar"]
-Color --> Render
-```
+#### Schema Design
+- **Students Table**: Stores profile information, skills, and readiness scores
+- **Market Signals Table**: Contains role-specific demand and required skills
+- **Roadmaps Table**: Persists generated action plans and portfolio projects
+- **Progress Logs Table**: Tracks task completion status and timestamps
 
-[No sources needed since this diagram shows conceptual workflow, not actual code structure]
+#### Data Flow
+- **Automatic Saving**: All database operations automatically persist to disk
+- **Foreign Key Constraints**: Ensures referential integrity between related tables
+- **JSON Storage**: Complex data structures (skills, tasks) stored as JSON strings
+- **Validation**: Database constraints enforce data type and range validation
 
 **Section sources**
-- [index.html:291-297](file://index.html#L291-L297)
-- [index.html:305-311](file://index.html#L305-L311)
+- [db.js:59-125](file://database/db.js#L59-L125)
+- [seed.js:43-209](file://database/seed.js#L43-L209)
 
-### Integration with Career Path Recommendations and Action Planning
-- Career readiness and skill match metrics:
-  - Provide overall readiness scores and path-specific match percentages
-  - Indicate number of gaps identified and those in progress
-- Action plan:
-  - Weekly checklists align with identified gaps (e.g., Node.js/Express, Docker basics, ML fundamentals)
-  - Encourages building portfolio projects that reinforce both strengths and gaps
-- Market insights:
-  - Local and remote demand signals help prioritize which gaps to address first
-  - Salary ranges and hiring hubs contextualize the value of closing specific gaps
+### API Endpoints and Integration
+RESTful API endpoints provide seamless frontend-backend communication:
 
-```mermaid
-graph LR
-S["Strengths & Gaps"] --> M["Market Insights"]
-S --> R["Readiness & Match Metrics"]
-R --> P["Action Plan"]
-M --> P
-P --> S
-```
+#### Key Endpoints
+- **POST /api/coach/analyze**: Executes full multi-agent pipeline
+- **GET /api/students/:id**: Retrieves student profile with progress data
+- **PATCH /api/students/:id**: Updates student profile fields
+- **POST /api/progress/toggle**: Toggles task completion and recalculates scores
 
-**Diagram sources**
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+#### Error Handling
+- **Input Validation**: Comprehensive parameter validation with descriptive error messages
+- **Database Errors**: Graceful handling of database connection and query failures
+- **Network Resilience**: Frontend handles network errors with user-friendly messages
 
 **Section sources**
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [api.js:118-176](file://routes/api.js#L118-L176)
 
 ## Dependency Analysis
-- UI dependencies:
-  - Tailwind CSS provides utility classes for layout, spacing, and typography
-  - Inline styles control dynamic widths for progress bars
-- Interactivity:
-  - Minimal JavaScript handles chat interactions, pipeline animation, tab switching, and modal toggling
-- Data flow:
-  - Skills data drives visual representation in the dual panels
-  - Metrics and market insights influence perceived priority of gaps
-  - Action plan reflects targeted improvements based on gaps
+The enhanced system introduces several new dependencies and architectural patterns:
 
+### Frontend Dependencies
+- **Framer Motion**: Advanced animation library for smooth UI transitions
+- **Lucide React**: Modern icon set for visual enhancement
+- **React 18**: Latest React features including concurrent rendering
+
+### Backend Dependencies
+- **SQL.js**: In-memory SQLite database for persistent storage
+- **Express Router**: Modular API endpoint organization
+- **Node.js File System**: Database file persistence and management
+
+### Data Flow Dependencies
 ```mermaid
 graph TB
-CSS["Tailwind CSS"] --> Layout["Layout & Styling"]
-JS["Inline JavaScript"] --> Interact["Chat, Tabs, Modal, Pipeline"]
-Data["Skills Data"] --> Panels["Strengths & Gaps Panels"]
-Panels --> Plan["Action Plan"]
-Metrics["Readiness & Match"] --> Plan
-Market["Market Insights"] --> Plan
+A["Frontend React App"] --> B["Express API Server"]
+B --> C["Career Coach Orchestrator"]
+C --> D["Skill Assessment Agent"]
+C --> E["Market Intelligence Agent"]
+C --> F["Roadmap Generator Agent"]
+D --> G["SQLite Database"]
+E --> G
+F --> G
+G --> H["File System"]
 ```
 
 **Diagram sources**
-- [index.html:10-21](file://index.html#L10-L21)
-- [index.html:565-681](file://index.html#L565-L681)
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [App.jsx:1-15](file://frontend/src/App.jsx#L1-L15)
+- [api.js:1-7](file://routes/api.js#L1-L7)
+- [db.js:1-8](file://database/db.js#L1-L8)
 
 **Section sources**
-- [index.html:10-21](file://index.html#L10-L21)
-- [index.html:565-681](file://index.html#L565-L681)
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:123-169](file://index.html#L123-L169)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:315-390](file://index.html#L315-L390)
+- [App.jsx:1-15](file://frontend/src/App.jsx#L1-L15)
+- [api.js:1-7](file://routes/api.js#L1-L7)
+- [db.js:1-8](file://database/db.js#L1-L8)
 
 ## Performance Considerations
-- Keep progress bars lightweight by using inline styles for width only
-- Avoid excessive DOM manipulations; reuse elements where possible
-- Prefer semantic markup for better rendering performance and accessibility
-- Limit animations to essential interactions to maintain responsiveness
+The enhanced system optimizes performance through several strategies:
+
+### Database Optimization
+- **In-Memory Processing**: SQL.js operates in memory for fast queries
+- **Automatic Persistence**: Background saving prevents performance impact during operations
+- **Indexed Queries**: Strategic indexing improves lookup performance
+- **Connection Pooling**: Reuses database connections to minimize overhead
+
+### Frontend Optimization
+- **Lazy Loading**: Components load only when needed
+- **Animation Performance**: Hardware-accelerated CSS transforms for smooth animations
+- **State Management**: Optimized React state updates with minimal re-renders
+- **Memory Management**: Proper cleanup of timers and event listeners
+
+### Network Optimization
+- **Request Batching**: Multiple API calls optimized where possible
+- **Error Recovery**: Automatic retry mechanisms for failed requests
+- **Caching Strategy**: Intelligent caching of static data like market signals
 
 [No sources needed since this section provides general guidance]
 
 ## Troubleshooting Guide
-- If progress bars do not render correctly:
-  - Verify inline width percentages are valid numbers between 0 and 100
-  - Ensure parent containers have adequate width to display bars
-- If color coding is unclear:
-  - Confirm class usage aligns with intended meaning (emerald for strengths, rose/amber for gaps)
-  - Check contrast ratios for readability
-- If interactivity fails:
-  - Inspect console for errors in event handlers
-  - Ensure IDs referenced by JavaScript exist in the DOM
+Common issues and their solutions in the enhanced system:
+
+### Database Issues
+- **Connection Problems**: Verify SQLite database file exists and is accessible
+- **Schema Mismatch**: Run seed script to ensure proper database structure
+- **Data Corruption**: Use backup files to restore database state
+
+### Skill Assessment Issues
+- **Matching Problems**: Check skill name formatting and normalization logic
+- **Performance Issues**: Monitor database query performance and optimize as needed
+- **Test Failures**: Run unit tests to validate agent functionality
+
+### Frontend Issues
+- **Animation Glitches**: Ensure Framer Motion is properly initialized
+- **State Synchronization**: Verify API responses match expected data structure
+- **Memory Leaks**: Check for proper cleanup of event listeners and timers
 
 **Section sources**
-- [index.html:291-297](file://index.html#L291-L297)
-- [index.html:305-311](file://index.html#L305-L311)
-- [index.html:565-681](file://index.html#L565-L681)
+- [db.js:25-31](file://database/db.js#L25-L31)
+- [skillAssessmentAgent.test.js:143-153](file://agents/skillAssessmentAgent.test.js#L143-L153)
+- [App.jsx:107-114](file://frontend/src/App.jsx#L107-L114)
 
 ## Conclusion
-The Skills Analysis Dashboard effectively communicates strengths and gaps through a clear dual-panel layout with progress bars and percentage indicators. The color coding system enhances immediate understanding, while integration with career readiness metrics, market insights, and an action plan guides users toward targeted development. By maintaining accessible visuals and concise interactivity, the dashboard supports informed decision-making for career growth.
+The enhanced Skills Analysis Dashboard now features a sophisticated multi-agent architecture with dedicated skill assessment capabilities and persistent database storage. The system provides deterministic gap matrix calculations, real-time progress tracking, and seamless integration with career path recommendations. The dual-panel layout effectively communicates strengths and gaps through clear visual design, while the underlying architecture ensures scalability and maintainability. By combining advanced front-end animations with robust back-end processing, the dashboard delivers an exceptional user experience for career development planning.
 
 [No sources needed since this section summarizes without analyzing specific files]
 
 ## Appendices
 
-### Skills Tracked
-- Strengths:
-  - JavaScript / ES6+
-  - React.js
-  - Python
-  - SQL / Databases
-  - Git / Version Control
-- Gaps:
-  - TensorFlow / PyTorch
-  - Data Preprocessing / Pandas
-  - Node.js / Express
-  - Docker / DevOps Basics
-  - System Design Basics
+### Skills Tracked and Assessment Results
+The system tracks various skill categories with corresponding assessment results:
+
+#### Example Strengths (High Proficiency)
+- **JavaScript / ES6+**: 85% match with target roles
+- **React.js**: 78% match with web development paths
+- **Python**: 72% match with data science and AI roles
+- **SQL / Databases**: 65% match with data-focused positions
+- **Git / Version Control**: 70% match with development workflows
+
+#### Example Gaps (Areas for Development)
+- **TensorFlow / PyTorch**: 15% - Machine learning frameworks
+- **Data Preprocessing / Pandas**: 30% - Data manipulation tools
+- **Node.js / Express**: 35% - Backend development frameworks
+- **Docker / DevOps Basics**: 10% - Containerization and deployment
+- **System Design Basics**: 20% - Architectural concepts
 
 **Section sources**
-- [index.html:291-297](file://index.html#L291-L297)
-- [index.html:305-311](file://index.html#L305-L311)
+- [skillAssessmentAgent.test.js:41-51](file://agents/skillAssessmentAgent.test.js#L41-L51)
+- [skillAssessmentAgent.test.js:57-66](file://agents/skillAssessmentAgent.test.js#L57-L66)
+- [seed.js:83-108](file://database/seed.js#L83-L108)
+
+### Database Schema Reference
+The persistent storage system uses a comprehensive schema design:
+
+#### Core Tables
+- **students**: User profiles with skills, interests, and readiness scores
+- **market_signals**: Role-specific demand data and required skills
+- **roadmaps**: Generated action plans with weekly tasks and portfolio projects
+- **progress_logs**: Task completion tracking with timestamps
+
+#### Data Relationships
+- Foreign key constraints ensure referential integrity
+- JSON fields store complex data structures efficiently
+- Timestamps track creation and modification dates
+- Validation constraints maintain data quality
+
+**Section sources**
+- [db.js:71-125](file://database/db.js#L71-L125)
+- [seed.js:43-209](file://database/seed.js#L43-L209)
+
+### API Endpoint Reference
+Complete reference for all available API endpoints:
+
+#### Student Management
+- **GET /api/students**: List all students
+- **GET /api/students/:id**: Get specific student profile
+- **PATCH /api/students/:id**: Update student information
+
+#### Analysis Pipeline
+- **POST /api/coach/analyze**: Execute full multi-agent pipeline
+- **POST /api/progress/toggle**: Toggle task completion status
+
+#### Request/Response Formats
+All endpoints include comprehensive input validation and return structured JSON responses with error handling.
+
+**Section sources**
+- [api.js:18-176](file://routes/api.js#L18-L176)

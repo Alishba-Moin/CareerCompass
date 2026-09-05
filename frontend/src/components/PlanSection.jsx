@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { CalendarRange, CheckSquare, FolderKanban, Layers, Clock, Star } from 'lucide-react';
+import { CalendarRange, CheckSquare, FolderKanban, Layers, Clock, Star, Download } from 'lucide-react';
 import { useLang } from '../i18n/LanguageContext.jsx';
+import { exportRoadmapPDF } from '../utils/pdfExport.js';
 
 const WEEK_ACCENTS = [
   { border: 'border-gold/30', badge: 'bg-gold/10 text-gold-dark' },
@@ -9,7 +10,7 @@ const WEEK_ACCENTS = [
   { border: 'border-brown-light/40', badge: 'bg-brown-light/20 text-brown' },
 ];
 
-export default function PlanSection({ analysis, onToggleTask }) {
+export default function PlanSection({ analysis, student, onToggleTask }) {
   const { t } = useLang();
 
   if (!analysis) {
@@ -25,12 +26,13 @@ export default function PlanSection({ analysis, onToggleTask }) {
           <CalendarRange size={24} className="text-brown-light" />
         </div>
         <h3 className="mt-4 font-display text-lg font-bold text-brownDark">{t('plan.empty')}</h3>
+        <p className="mt-2 text-sm text-mocha max-w-sm">{t('plan.emptyPrompt')}</p>
       </motion.section>
     );
   }
 
-  const weeks = analysis.weeklyTasks;
-  const totalTasks = weeks.reduce((s, w) => s + w.tasks.length, 0);
+  const weeks = analysis.weeklyTasks || [];
+  const totalTasks = weeks.reduce((s, w) => s + (w.tasks?.length ?? 0), 0);
   const project = analysis.portfolioProject;
 
   return (
@@ -49,9 +51,18 @@ export default function PlanSection({ analysis, onToggleTask }) {
           </div>
           <h2 className="font-display text-xl font-bold text-brownDark">{t('plan.title')}</h2>
         </div>
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-brown bg-brown/10 border border-brown/20 px-3 py-1.5 rounded-lg">
-          <CheckSquare size={13} /> {t('plan.badge', { n: totalTasks })}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-brown bg-brown/10 border border-brown/20 px-3 py-1.5 rounded-lg">
+            <CheckSquare size={13} /> {t('plan.badge', { n: totalTasks })}
+          </span>
+          <button
+            onClick={() => exportRoadmapPDF({ student, analysis })}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-gold to-brown px-3 py-1.5 rounded-lg shadow-sm hover:opacity-90 transition-opacity"
+            title={t('plan.downloadPdf')}
+          >
+            <Download size={13} /> {t('plan.downloadPdf')}
+          </button>
+        </div>
       </div>
 
       {/* Weeks */}

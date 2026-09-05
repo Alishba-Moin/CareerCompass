@@ -2,8 +2,22 @@
 
 <cite>
 **Referenced Files in This Document**
+- [careerCoachOrchestrator.js](file://agents/careerCoachOrchestrator.js)
+- [ChatPanel.jsx](file://frontend/src/components/ChatPanel.jsx)
+- [App.jsx](file://frontend/src/App.jsx)
+- [api.js](file://frontend/src/api.js)
+- [api.js](file://routes/api.js)
 - [index.html](file://index.html)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated architecture overview to reflect real multi-agent orchestration instead of simulated responses
+- Replaced pre-programmed response system with backend API integration
+- Added detailed analysis of the career coach orchestrator and specialized agents
+- Updated chat flow examples to show real-time pipeline execution
+- Enhanced multi-agent system integration section with actual agent coordination
+- Removed references to simulated chatResponses array and replaced with structured pipeline data
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -11,290 +25,384 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+6. [Multi-Agent Orchestration System](#multi-agent-orchestration-system)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the conversational experience and simulated AI responses for the AI Career Coach chat interface. It focuses on how user messages are captured, displayed, and answered using a pre-programmed response set, with realistic timing and typing indicators. It also describes how the chat references a multi-agent system concept to frame guidance as synthesized insights from specialized agents (Skill Assessment, Market Intel, Career Path, etc.).
+This document explains the conversational experience and AI-powered responses for the AI Career Coach chat interface. The system now uses a sophisticated multi-agent orchestration system that coordinates specialized agents (Skill Assessment, Market Intelligence, Career Path, Roadmap Generator, Progress Tracker) to provide genuine, data-driven career guidance instead of pre-programmed responses. The chat interface captures user queries, displays real-time typing indicators during pipeline execution, and presents synthesized recommendations based on actual student profiles and market data.
 
 ## Project Structure
-The application is a single-page prototype implemented in one HTML file that includes:
-- A hero/profile section with career readiness score and quick stats
-- The AI Career Coach chat area with message history, suggested questions, and input handling
-- A Multi-Agent Pipeline visualization showing agent roles and status
-- Additional sections for skills gap analysis, market insights, action plan, and project recommendations
+The application consists of a React frontend with a modern chat interface and a Node.js backend with a multi-agent orchestration system:
+- **Frontend**: React components with ChatPanel for messaging, App.jsx for state management and API calls
+- **Backend**: Express routes coordinating the career coach orchestrator
+- **Agents**: Specialized agents for different aspects of career analysis
+- **Database**: SQLite storage for student profiles, skills, and progress tracking
 
 ```mermaid
 graph TB
-UI["Chat Area<br/>Message History + Input"] --> JS["JavaScript Logic<br/>sendMessage / sendSuggested"]
-JS --> Responses["Pre-programmed Responses<br/>chatResponses array"]
-JS --> Typing["Typing Indicator<br/>showTyping / removeTyping"]
-UI --> DOM["Dynamic Message Elements<br/>appendMessage"]
-AgentUI["Agent Cards<br/>Pipeline Visualization"] --> Concept["Multi-Agent Concept<br/>References in Chat"]
+UI["React Chat Interface<br/>ChatPanel + App.jsx"] --> API["API Layer<br/>fetch('/api/coach/analyze')"]
+API --> ROUTES["Express Routes<br/>/api/coach/analyze"]
+ROUTES --> ORCHESTRATOR["Career Coach Orchestrator<br/>runPipeline()"]
+ORCHESTRATOR --> AGENTS["Specialized Agents<br/>Skill Assessment, Market Intel, etc."]
+AGENTS --> DB["SQLite Database<br/>Student Profiles & Data"]
+ORCHESTRATOR --> RESPONSE["Structured Pipeline Response"]
+RESPONSE --> UI["Composed Reply Display"]
 ```
 
 **Diagram sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:565-628](file://index.html#L565-L628)
-- [index.html:228-280](file://index.html#L228-L280)
+- [App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
+- [api.js:33-41](file://frontend/src/api.js#L33-L41)
+- [api.js:118-142](file://routes/api.js#L118-L142)
+- [careerCoachOrchestrator.js:210-336](file://agents/careerCoachOrchestrator.js#L210-L336)
 
 **Section sources**
-- [index.html:1-70](file://index.html#L1-L70)
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:228-280](file://index.html#L228-L280)
-- [index.html:565-681](file://index.html#L565-L681)
+- [ChatPanel.jsx:1-187](file://frontend/src/components/ChatPanel.jsx#L1-L187)
+- [App.jsx:1-388](file://frontend/src/App.jsx#L1-L388)
+- [careerCoachOrchestrator.js:1-337](file://agents/careerCoachOrchestrator.js#L1-L337)
 
 ## Core Components
-- Chat area: scrollable message container with initial greeting and example conversation
-- User input handling: text input with Enter key support and Send button
-- Response display: dynamic creation of message bubbles for user and coach
-- Pre-programmed responses: an array of curated guidance messages mixing Urdu and English
-- Typing indicator: animated dots while “AI” is composing a reply
-- Suggested questions: clickable buttons that trigger the same flow as manual input
-- Multi-agent references: chat messages cite analyses from Skill Assessment, Market Intel, and Career Path agents
+- **Chat Panel**: Modern React component with message history, typing indicators, and suggested questions
+- **Message Handling**: Real-time user input processing with Enter key support and Send button
+- **Response Display**: Dynamic rendering of structured pipeline results with bilingual support
+- **Typing Indicator**: Animated dots during multi-agent pipeline execution
+- **Suggested Questions**: Predefined career paths that trigger full pipeline analysis
+- **Multi-Agent Integration**: Backend orchestration coordinating specialized agents for genuine analysis
 
 Key responsibilities:
 - Capture and validate user input
-- Append user messages to history
-- Show typing animation
-- Simulate processing delay
-- Append coach responses
-- Maintain scroll position at the latest message
+- Send requests to multi-agent pipeline
+- Display real-time typing indicators during processing
+- Render structured analysis results as natural language
+- Maintain conversation history and scroll position
 
 **Section sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:565-628](file://index.html#L565-L628)
+- [ChatPanel.jsx:18-23](file://frontend/src/components/ChatPanel.jsx#L18-L23)
+- [App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
 
 ## Architecture Overview
-The chat flow is event-driven and entirely client-side:
-- User triggers sendMessage() via Enter or button click
-- sendMessage() validates input, appends user message, shows typing, schedules a delayed response
-- After a randomized delay, removeTyping() hides the indicator and appendMessage() renders the coach’s next response from chatResponses
-- sendSuggested() mirrors this flow for predefined question buttons
-- Messages are appended to the chatArea and auto-scrolled into view
+The chat flow is now event-driven with real backend orchestration:
+- User triggers message submission via Enter or button click
+- Frontend sends request to `/api/coach/analyze` endpoint
+- Backend orchestrator coordinates multiple specialized agents
+- Each agent performs genuine analysis using student data and market information
+- Results are synthesized into a unified recommendation with bilingual support
+- Frontend displays typing indicators during pipeline execution and final composed reply
 
 ```mermaid
 sequenceDiagram
 participant U as "User"
-participant C as "Chat UI"
-participant M as "sendMessage()"
-participant T as "Typing Indicator"
-participant R as "chatResponses[]"
-participant A as "appendMessage()"
-U->>C : Type message + Enter/Click Send
-C->>M : sendMessage()
-M->>A : appendMessage(userMsg, 'user')
-M->>T : showTyping()
-Note over M,T : Random delay 1200–2000ms
-M->>R : select next response (circular index)
-M->>T : removeTyping()
-M->>A : appendMessage(response, 'coach')
-A-->>U : Scroll to latest message
+participant C as "ChatPanel"
+participant A as "App.handleSend()"
+participant API as "API Layer"
+participant R as "Express Route"
+participant O as "Orchestrator"
+participant G as "Specialized Agents"
+U->>C : Type query + Enter/Click Send
+C->>A : onSend(query)
+A->>API : analyze(studentId, query)
+API->>R : POST /api/coach/analyze
+R->>O : runPipeline(db, studentId, query)
+O->>G : Execute Skill Assessment Agent
+O->>G : Execute Market Intelligence Agent
+O->>G : Execute Career Path Agent
+O->>G : Execute Roadmap Generator Agent
+O->>G : Execute Progress Tracker Agent
+G-->>O : Structured Analysis Results
+O-->>R : Unified Pipeline Response
+R-->>API : JSON Response
+API-->>A : Analysis Data
+A->>C : Set messages, finalReply, typing=false
+C-->>U : Display composed reply
 ```
 
 **Diagram sources**
-- [index.html:576-600](file://index.html#L576-L600)
-- [index.html:602-628](file://index.html#L602-L628)
+- [App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
+- [api.js:33-41](file://frontend/src/api.js#L33-L41)
+- [api.js:118-142](file://routes/api.js#L118-L142)
+- [careerCoachOrchestrator.js:210-336](file://agents/careerCoachOrchestrator.js#L210-L336)
 
 ## Detailed Component Analysis
 
-### Chat Area Implementation
-- Container: a scrollable div with padding and spacing for messages
-- Initial content: a coach greeting and an example student question followed by a coach analysis referencing multiple agents
-- Suggested questions: three buttons that call sendSuggested() with their text
-- Input row: text input bound to Enter key and a Send button calling sendMessage()
+### Chat Panel Implementation
+- **Container**: Modern React component with smooth animations and responsive design
+- **Message History**: Scrollable container with animated message appearance
+- **Input Handling**: Text input with Enter key support and disabled state during processing
+- **Typing Indicator**: Animated dots with "thinking" text during pipeline execution
+- **Suggested Questions**: Three predefined career paths that trigger full analysis
+- **Bilingual Support**: Messages adapt to selected language (English/Urdu)
 
 Styling highlights:
-- Glass morphism background and subtle borders
-- Distinct bubble styles for user vs coach
-- Smooth slide-up animations for new messages
-- Custom scrollbar styling for dark theme
+- Glass morphism effects with parchment backgrounds
+- Gradient buttons and smooth transitions
+- Custom scrollbar styling for dark theme compatibility
+- Responsive design for mobile and desktop
 
 **Section sources**
-- [index.html:172-226](file://index.html#L172-L226)
+- [ChatPanel.jsx:25-187](file://frontend/src/components/ChatPanel.jsx#L25-L187)
 
 ### Message History and Dynamic Rendering
-- appendMessage(type) creates a new message element with appropriate classes and inner HTML based on type
-- For user messages: right-aligned bubble with avatar placeholder
-- For coach messages: left-aligned bubble with bot avatar
-- Automatically scrolls the chat area to the bottom after each append
+- **Message State**: Array of message objects with role, text, and error properties
+- **Dynamic Rendering**: Map through messages array with motion animations
+- **User vs Coach Styling**: Distinct visual treatment for user (gradient) vs coach (parchment) messages
+- **Error Handling**: Special styling for error messages with red border
+- **Auto-scroll**: Automatic scrolling to latest message using refs
 
 Complexity:
-- Each append is O(1) DOM insertion; scrolling is O(1) operation per message
-- No heavy computations; safe for typical session lengths
+- React state management ensures efficient re-renders
+- Motion library provides smooth animations without performance impact
+- Memory efficient with proper cleanup of timers and state
 
 **Section sources**
-- [index.html:602-613](file://index.html#L602-L613)
+- [ChatPanel.jsx:64-96](file://frontend/src/components/ChatPanel.jsx#L64-L96)
 
-### User Input Handling: sendMessage()
-- Reads the input value, trims whitespace, and ignores empty submissions
-- Appends the user message to the chat
-- Clears the input field
-- Shows typing indicator
-- Uses setTimeout with a random delay between 1200ms and 2000ms to simulate realistic thinking time
-- Removes typing indicator and appends the next coach response from chatResponses
-- Increments a circular index to cycle through responses
+### User Input Handling: handleSend()
+- **Validation**: Checks for running state and valid student ID before processing
+- **State Management**: Updates messages, sets typing indicator, resets command center
+- **API Integration**: Calls analyze() function with student ID and query
+- **Error Handling**: Catches network errors and displays user-friendly messages
+- **Cleanup**: Clears timers and resets states in finally block
 
 Edge cases:
-- Empty input is ignored
-- Index wraps around when reaching the end of the array
+- Prevents duplicate submissions during pipeline execution
+- Handles student switching mid-pipeline by discarding stale results
+- Manages memory leaks with proper timer cleanup
 
 **Section sources**
-- [index.html:576-589](file://index.html#L576-L589)
+- [App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
 
-### Suggested Questions: sendSuggested()
-- Extracts the button’s text content as the user message
-- Appends it to the chat
-- Shows typing indicator
-- After a randomized delay, removes typing and appends the next coach response
-- Increments the response index
+### Suggested Questions: Click Handlers
+- **Predefined Queries**: Three career paths (AI/ML Engineer, Full Stack Web Developer, Data Analyst)
+- **Event Binding**: onClick handlers that call onSend with predefined text
+- **Disabled State**: Buttons disabled during pipeline execution to prevent conflicts
+- **Visual Feedback**: Hover effects and active states for better UX
 
 Behavioral note:
-- Mirrors sendMessage() to ensure consistent UX across manual and suggested inputs
+- Mirrors manual input handling to ensure consistent experience
+- Triggers full multi-agent pipeline analysis for each suggestion
 
 **Section sources**
-- [index.html:591-600](file://index.html#L591-L600)
+- [ChatPanel.jsx:141-156](file://frontend/src/components/ChatPanel.jsx#L141-L156)
 
-### Pre-programmed Responses: chatResponses Array
-- Contains several curated guidance messages blending Urdu and English
-- Topics include hybrid path advice, freelancing strategy, remote job steps, portfolio projects, and readiness score interpretation
-- Responses are selected in a round-robin fashion via a global index
-
-Design rationale:
-- Provides immediate, contextual feedback without backend dependencies
-- Demonstrates multi-agent synthesis in text (e.g., citing Skill Assessment, Market Intel, Career Path)
-
-**Section sources**
-- [index.html:567-573](file://index.html#L567-L573)
-
-### Typing Indicator Animation: showTyping() and removeTyping()
-- showTyping():
-  - Creates a temporary message element with an animated dot sequence
-  - Uses CSS keyframes defined in the page style for smooth pulsing
-  - Appends to chatArea and scrolls to bottom
-- removeTyping():
-  - Finds and removes the typing indicator element if present
+### Typing Indicator Animation
+- **State Management**: Boolean typing state controls indicator visibility
+- **Animation**: Framer Motion provides smooth fade-in/out with bouncing dots
+- **Text Localization**: "Thinking" text adapts to selected language
+- **Timing**: Shows during entire pipeline execution for realistic feedback
 
 Animation details:
-- Keyframe named typing animates opacity and scale to create a “thinking” effect
-- Dots are staggered with different animation delays for natural motion
+- Three animated dots with staggered delays for natural motion
+- Smooth opacity transitions for appearance/disappearance
+- Consistent timing across all animation phases
 
 **Section sources**
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:615-628](file://index.html#L615-L628)
+- [ChatPanel.jsx:118-138](file://frontend/src/components/ChatPanel.jsx#L118-L138)
 
 ### Multi-Agent System Integration and References
-- The chat area header indicates “Powered by Multi-Agent System”
-- Example coach messages reference data from:
-  - Skill Assessment agent
-  - Market Intel agent
-  - Career Path agent
-- The pipeline section visualizes six agents:
-  - Career Coach (orchestrator)
-  - Skill Assessment (evaluator)
-  - Market Intel (Pakistan + Remote)
-  - Career Path (planner)
-  - Roadmap Gen (builder)
-  - Progress Tracker (monitor)
-- The runPipeline() function animates agent activation sequentially to simulate collaborative analysis
+- **Backend Orchestration**: Career Coach Orchestrator coordinates five specialized agents
+- **Agent Roles**: 
+  - Skill Assessment Agent evaluates strengths and gaps
+  - Market Intelligence Agent analyzes local and remote demand
+  - Career Path Agent determines optimal career trajectory
+  - Roadmap Generator creates actionable weekly plans
+  - Progress Tracker monitors completion and readiness scores
+- **Data Flow**: Sequential agent execution with shared context
+- **Result Synthesis**: Unified recommendation combining all agent outputs
 
 Conceptual mapping:
-- Chat responses synthesize outputs from these agents, presenting a unified verdict and actionable plan
+- Chat responses synthesize outputs from specialized agents
+- Each agent contributes specific expertise to the final recommendation
+- Pipeline execution provides transparent progress visualization
 
 **Section sources**
-- [index.html:172-183](file://index.html#L172-L183)
-- [index.html:199-211](file://index.html#L199-L211)
-- [index.html:228-280](file://index.html#L228-L280)
-- [index.html:631-657](file://index.html#L631-L657)
+- [careerCoachOrchestrator.js:210-336](file://agents/careerCoachOrchestrator.js#L210-L336)
+- [App.jsx:48-60](file://frontend/src/App.jsx#L48-L60)
 
 ### Chat Flow Examples
-- Example 1: Manual input
-  - User types a question and presses Enter
-  - sendMessage() appends user message, shows typing, waits 1.2–2.0 seconds, then appends a coach response
-- Example 2: Suggested question
-  - User clicks a suggestion button
-  - sendSuggested() performs the same flow as manual input
-- Example 3: Repeated interactions
-  - Each interaction advances the response index, cycling through chatResponses
+- **Example 1: Manual Input**
+  - User types career question and presses Enter
+  - handleSend() validates input and calls analyze() API
+  - Typing indicator shows during pipeline execution
+  - Final composed reply displays structured analysis results
+- **Example 2: Suggested Question**
+  - User clicks predefined career path button
+  - Same pipeline execution as manual input
+  - Consistent UX across interaction methods
+- **Example 3: Error Handling**
+  - Network failures display user-friendly error messages
+  - Pipeline errors caught and logged appropriately
+  - Graceful degradation when backend is unavailable
 
 Timing behavior:
-- Randomized delay simulates realistic conversation pacing
-- Auto-scroll ensures the latest message is always visible
+- Pipeline execution time varies based on database queries and agent complexity
+- Typing indicator provides continuous feedback during processing
+- Auto-scroll ensures latest content remains visible
 
 **Section sources**
-- [index.html:576-600](file://index.html#L576-L600)
-- [index.html:602-628](file://index.html#L602-L628)
+- [App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
+- [ChatPanel.jsx:18-23](file://frontend/src/components/ChatPanel.jsx#L18-L23)
+
+## Multi-Agent Orchestration System
+
+### Career Coach Orchestrator
+The orchestrator serves as the central coordination layer that manages the entire analysis pipeline:
+
+**Core Responsibilities:**
+- Student profile retrieval and validation
+- Career target resolution from free-text queries
+- Sequential agent execution with error handling
+- Result synthesis and bilingual recommendation generation
+- Database updates for readiness scores and progress tracking
+
+**Target Resolution Logic:**
+- Comparison query detection (e.g., "AI/ML vs Web")
+- Exact match prioritization for specific roles
+- Partial matching with weighted keyword scoring
+- Fallback to student interests when no match found
+
+**Section sources**
+- [careerCoachOrchestrator.js:47-159](file://agents/careerCoachOrchestrator.js#L47-L159)
+
+### Specialized Agent Coordination
+Each agent performs specific analysis tasks:
+
+**Skill Assessment Agent:**
+- Evaluates student skills against target role requirements
+- Calculates match percentage and identifies skill gaps
+- Provides strength analysis and improvement recommendations
+
+**Market Intelligence Agent:**
+- Analyzes local and remote job market demand
+- Tracks growth trends and salary expectations
+- Provides geographic opportunity insights
+
+**Career Path Agent:**
+- Determines optimal career trajectory based on skills and market data
+- Identifies milestone achievements and progression steps
+- Recommends educational and certification pathways
+
+**Roadmap Generator Agent:**
+- Creates 4-week actionable plans with specific tasks
+- Generates portfolio project recommendations
+- Integrates with progress tracking system
+
+**Progress Tracker Agent:**
+- Monitors task completion and calculates readiness scores
+- Updates student profiles with current status
+- Provides progress visualization and motivation
+
+**Section sources**
+- [careerCoachOrchestrator.js:240-296](file://agents/careerCoachOrchestrator.js#L240-L296)
+
+### API Integration Layer
+The frontend communicates with the backend through a clean API layer:
+
+**Analysis Endpoint:**
+- POST `/api/coach/analyze` accepts student ID and query
+- Returns structured pipeline results with agent logs
+- Handles validation and error responses consistently
+
+**Progress Management:**
+- Task toggling recalculates readiness scores
+- Optimistic updates provide immediate feedback
+- Server synchronization ensures data consistency
+
+**Section sources**
+- [api.js:33-41](file://frontend/src/api.js#L33-L41)
+- [api.js:44-52](file://frontend/src/api.js#L44-L52)
+- [api.js:118-142](file://routes/api.js#L118-L142)
 
 ## Dependency Analysis
 Internal dependencies:
-- sendMessage() depends on appendMessage(), showTyping(), removeTyping(), and chatResponses
-- sendSuggested() depends on appendMessage(), showTyping(), removeTyping(), and chatResponses
-- showTyping() relies on CSS keyframes defined in the page style
-- Pipeline animation depends on DOM elements representing agents and updates their active states
+- ChatPanel depends on App.jsx for state management and API calls
+- App.jsx orchestrates the entire pipeline execution and result composition
+- API layer abstracts backend communication with error handling
+- Backend routes coordinate the career coach orchestrator
+- Orchestrator manages specialized agent execution and result synthesis
 
 External dependencies:
-- Tailwind CSS via CDN for utility classes
-- Google Fonts (Inter) for typography
+- React ecosystem (useState, useEffect, useRef) for state management
+- Framer Motion for smooth animations and transitions
+- Lucide React for iconography
+- Express.js for backend routing
+- SQLite for data persistence
 
 Coupling and cohesion:
-- High cohesion within chat logic functions
-- Low coupling to external services (no network calls)
-- Clear separation between UI structure (HTML), styling (CSS), and behavior (JS)
+- High cohesion within React components with clear separation of concerns
+- Low coupling between frontend and backend through REST API
+- Clear separation between orchestration logic and individual agent implementations
+- Modular architecture allows easy extension with new agents
 
 Potential issues:
-- Circular dependency risk is minimal due to linear function calls
-- Global state (responseIndex) must be managed carefully if extending functionality
+- Network failures handled gracefully with user-friendly error messages
+- Memory management through proper timer cleanup and state disposal
+- Race conditions prevented with student ID validation and ref guards
 
 ```mermaid
 graph LR
-A["sendMessage()"] --> B["appendMessage()"]
-A --> C["showTyping()"]
-A --> D["removeTyping()"]
-A --> E["chatResponses[]"]
-F["sendSuggested()"] --> B
-F --> C
-F --> D
-F --> E
-C --> G["CSS @keyframes typing"]
+A["ChatPanel.jsx"] --> B["App.jsx"]
+B --> C["api.js"]
+C --> D["routes/api.js"]
+D --> E["careerCoachOrchestrator.js"]
+E --> F["Specialized Agents"]
+F --> G["SQLite Database"]
+B --> H["CommandCenter.jsx"]
+B --> I["Other Components"]
 ```
 
 **Diagram sources**
-- [index.html:565-628](file://index.html#L565-L628)
-- [index.html:22-43](file://index.html#L22-L43)
+- [ChatPanel.jsx:1-187](file://frontend/src/components/ChatPanel.jsx#L1-L187)
+- [App.jsx:1-388](file://frontend/src/App.jsx#L1-L388)
+- [api.js:1-64](file://frontend/src/api.js#L1-L64)
+- [api.js:1-176](file://routes/api.js#L1-L176)
+- [careerCoachOrchestrator.js:1-337](file://agents/careerCoachOrchestrator.js#L1-L337)
 
 **Section sources**
-- [index.html:565-628](file://index.html#L565-L628)
-- [index.html:22-43](file://index.html#L22-L43)
+- [App.jsx:1-388](file://frontend/src/App.jsx#L1-L388)
+- [api.js:1-64](file://frontend/src/api.js#L1-L64)
 
 ## Performance Considerations
-- DOM operations are lightweight; appending messages and scrolling are efficient for typical usage
-- Avoid excessive message accumulation by considering virtualization or pagination if scaling up
-- Keep chatResponses concise to minimize memory footprint
-- Debounce rapid repeated sends if needed to prevent UI thrashing
-- Use requestAnimationFrame sparingly; current animations rely on CSS keyframes which are GPU-friendly
+- **React Optimization**: Efficient state management with proper dependency arrays and memoization
+- **Memory Management**: Timer cleanup prevents memory leaks during component lifecycle
+- **Network Efficiency**: Single API call per analysis reduces server load
+- **Animation Performance**: CSS transforms and GPU acceleration for smooth animations
+- **Database Queries**: Optimized SQL queries with proper indexing considerations
+- **Error Handling**: Graceful degradation when backend services are unavailable
 
-[No sources needed since this section provides general guidance]
+Scalability considerations:
+- Pipeline execution time increases with more complex queries
+- Database connection pooling for concurrent requests
+- Potential for caching frequently accessed student data
+- Load balancing considerations for high-traffic scenarios
 
 ## Troubleshooting Guide
 Common issues and resolutions:
-- Messages not appearing:
-  - Ensure appendMessage() is called and chatArea exists in the DOM
-  - Verify no JavaScript errors blocking execution
-- Typing indicator not removed:
-  - Confirm removeTyping() runs after the timeout and that the element id matches
-- Input not sending:
-  - Check that Enter key handler invokes sendMessage()
-  - Validate that the input element id matches the selector
-- Responses not cycling:
-  - Ensure responseIndex increments correctly and wraps using modulo
-- Visual glitches:
-  - Confirm CSS classes for chat-msg and animations are applied
-  - Check Tailwind CDN availability and font loading
+- **Messages not appearing**:
+  - Verify API endpoint connectivity and CORS configuration
+  - Check browser console for network errors
+  - Ensure proper error handling in catch blocks
+- **Typing indicator not removing**:
+  - Confirm finally block executes properly
+  - Check for unhandled promise rejections
+  - Verify component unmount cleanup
+- **Pipeline execution fails**:
+  - Validate student ID format and existence
+  - Check database connectivity and schema
+  - Review agent-specific error logs
+- **Results not displaying**:
+  - Verify composeReply function receives proper data structure
+  - Check language context for translation keys
+  - Ensure proper state updates in React components
+- **Performance issues**:
+  - Monitor network request times and optimize slow endpoints
+  - Check for unnecessary re-renders in React components
+  - Profile database query performance
 
 **Section sources**
-- [index.html:576-628](file://index.html#L576-L628)
+- [App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
+- [api.js:7-20](file://frontend/src/api.js#L7-L20)
 
 ## Conclusion
-The AI Career Coach chat interface delivers a polished, interactive experience using client-side JavaScript to simulate realistic conversations. It combines message history management, user input handling, dynamic rendering, typing animations, and curated responses to provide immediate guidance. The integration with a multi-agent concept enriches the narrative by attributing insights to specialized agents, enhancing perceived intelligence and personalization. Future enhancements could include persistent chat storage, richer response selection logic, and optional backend integration for real-time AI capabilities.
+The AI Career Coach chat interface has evolved from a simple simulated response system to a sophisticated multi-agent orchestration platform. The new architecture provides genuine, data-driven career guidance through coordinated specialized agents that analyze student profiles, market conditions, and career trajectories. The React frontend delivers a polished user experience with real-time feedback, while the backend ensures reliable analysis through robust error handling and database integration. Future enhancements could include additional agent specializations, enhanced analytics dashboards, and expanded language support for global accessibility.

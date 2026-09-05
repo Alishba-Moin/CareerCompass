@@ -2,8 +2,29 @@
 
 <cite>
 **Referenced Files in This Document**
-- [index.html](file://index.html)
+- [server.js](file://server.js)
+- [package.json](file://package.json)
+- [frontend/package.json](file://frontend/package.json)
+- [routes/api.js](file://routes/api.js)
+- [database/db.js](file://database/db.js)
+- [database/seed.js](file://database/seed.js)
+- [agents/careerCoachOrchestrator.js](file://agents/careerCoachOrchestrator.js)
+- [agents/skillAssessmentAgent.js](file://agents/skillAssessmentAgent.js)
+- [agents/marketIntelligenceAgent.js](file://agents/marketIntelligenceAgent.js)
+- [agents/progressTrackerAgent.js](file://agents/progressTrackerAgent.js)
+- [frontend/src/App.jsx](file://frontend/src/App.jsx)
+- [frontend/src/components/CommandCenter.jsx](file://frontend/src/components/CommandCenter.jsx)
+- [frontend/src/api.js](file://frontend/src/api.js)
+- [spec.md](file://spec.md)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated architecture description from single-file prototype to full-stack implementation with Express.js backend, React frontend, multi-agent system, and SQLite database
+- Replaced client-side HTML/CSS/JS references with modern full-stack components and services
+- Updated all technical sections to reflect the new modular architecture and API-driven communication
+- Enhanced agent system documentation with actual implementations and database integration
+- Added comprehensive coverage of the React frontend components and Express.js routing structure
 
 ## Table of Contents
 1. Introduction
@@ -18,314 +39,333 @@
 10. Appendices
 
 ## Introduction
-CareerCompass is a hackathon prototype that helps Pakistani CS graduates navigate between two popular career paths: AI/ML and Full Stack Web Development. It uses a single-file architecture (HTML, CSS, and JavaScript in one cohesive application) to deliver an interactive experience with a chat interface, agent visualization, skill assessment, market intelligence, and an action plan. The platform emphasizes a hybrid approach: achieve immediate job readiness through Full Stack skills while building long-term specialization in AI/ML.
+CareerCompass is an AI-powered career guidance platform for Pakistani students that has evolved from a hackathon prototype into a production-ready full-stack application. The platform helps Pakistani Computer Science graduates navigate between two popular career paths: AI/ML and Full Stack Web Development through a sophisticated multi-agent pipeline system.
 
-Target audience: Pakistani Computer Science graduates seeking practical guidance for local and remote opportunities. The app demonstrates how a multi-agent pipeline can synthesize skill assessment, market intelligence, and path planning into a personalized roadmap.
+The current implementation features a modern technology stack with an Express.js backend serving RESTful APIs, a React frontend built with Vite, a comprehensive multi-agent system, and SQLite database for persistent data storage. The platform emphasizes a hybrid approach: achieve immediate job readiness through Full Stack skills while building long-term specialization in AI/ML.
+
+Target audience: Pakistani Computer Science graduates seeking practical guidance for local and remote opportunities. The app demonstrates how a multi-agent pipeline can synthesize skill assessment, market intelligence, and path planning into personalized roadmaps with real-time progress tracking.
 
 Key concepts used throughout the codebase:
-- Multi-agent pipeline: A set of specialized agents (Coach, Skill Assessment, Market Intel, Career Path, Roadmap Gen, Progress Tracker) that collaborate to produce recommendations.
-- Skill assessment: Evaluation of current skills against target roles to identify strengths and gaps.
-- Market intelligence: Insights into local and remote demand, salary ranges, hiring hubs, and platforms relevant to Pakistan.
-
-Practical examples included in the prototype:
-- Chat interface: Ask questions and receive guidance grounded in profile data and simulated agent outputs.
-- Agent visualization: Animated pipeline showing how agents process inputs and complete tasks.
-- Action planning: A 4-week checklist tailored to bridge skill gaps and launch portfolio projects.
+- Multi-agent pipeline: A set of specialized agents (Coach, Skill Assessment, Market Intel, Career Path, Roadmap Gen, Progress Tracker) that collaborate to produce recommendations
+- Skill assessment: Evaluation of current skills against target roles to identify strengths and gaps
+- Market intelligence: Insights into local and remote demand, salary ranges, hiring hubs, and platforms relevant to Pakistan
 
 **Section sources**
-- [index.html:1-684](file://index.html#L1-L684)
+- [spec.md:8-16](file://spec.md#L8-L16)
+- [spec.md:20-52](file://spec.md#L20-L52)
 
 ## Project Structure
-The project is a monolithic single-page application contained entirely within one HTML file. All styling and interactivity are embedded inline, enabling quick deployment and easy demonstration during hackathons.
+The project has been completely restructured from a monolithic single-file prototype into a modern full-stack architecture with clear separation of concerns.
 
-Highlights:
-- Single-file design: HTML structure, Tailwind-based styles, and JavaScript logic coexist in index.html.
-- UI sections: Profile overview, coach chat, multi-agent pipeline visualization, skill gap analysis, market insights (local and remote), 4-week action plan, and portfolio project recommendations.
-- Interactive elements: Chat input with typing indicators, animated agent pipeline, tabbed market views, editable profile modal, and score counter animation.
+### Backend Architecture
+- **Express.js Server**: Central server handling API routes, middleware, and database initialization
+- **Multi-Agent System**: Modular agent modules with specific responsibilities and deterministic logic
+- **SQLite Database**: Persistent storage with schema management and seed data
+- **RESTful APIs**: Clean API endpoints for frontend communication
+
+### Frontend Architecture  
+- **React Application**: Modern component-based UI built with Vite
+- **Component Library**: Specialized components for chat, command center, profile management, and data visualization
+- **State Management**: React hooks for local state and API integration
+- **Internationalization**: Bilingual support (English/Roman Urdu) with context-based switching
+
+### Agent System
+- **Career Coach Orchestrator**: Central coordination layer managing the entire pipeline
+- **Specialized Agents**: Individual agents for skill assessment, market intelligence, career path planning, roadmap generation, and progress tracking
+- **Database Integration**: All agents interact with SQLite for data persistence and retrieval
 
 ```mermaid
 graph TB
-A["index.html"] --> B["Profile Section"]
-A --> C["AI Coach Chat"]
-A --> D["Multi-Agent Pipeline"]
-A --> E["Skill Gap Analysis"]
-A --> F["Market Insights"]
-A --> G["4-Week Action Plan"]
-A --> H["Portfolio Recommendations"]
+subgraph "Frontend (React)"
+A["App.jsx"] --> B["Components"]
+B --> C["ChatPanel"]
+B --> D["CommandCenter"]
+B --> E["ProfileCard"]
+B --> F["ScorePanel"]
+end
+subgraph "Backend (Express.js)"
+G["server.js"] --> H["API Routes"]
+H --> I["careerCoachOrchestrator.js"]
+I --> J["skillAssessmentAgent.js"]
+I --> K["marketIntelligenceAgent.js"]
+I --> L["progressTrackerAgent.js"]
+end
+subgraph "Data Layer"
+M["SQLite Database"]
+N["Seed Data"]
+end
+A --> G
+G --> M
+N --> M
 ```
 
 **Diagram sources**
-- [index.html:72-527](file://index.html#L72-L527)
+- [server.js:13-23](file://server.js#L13-L23)
+- [frontend/src/App.jsx:82-114](file://frontend/src/App.jsx#L82-L114)
+- [agents/careerCoachOrchestrator.js:210-237](file://agents/careerCoachOrchestrator.js#L210-L237)
 
 **Section sources**
-- [index.html:1-684](file://index.html#L1-L684)
+- [server.js:1-37](file://server.js#L1-L37)
+- [frontend/src/App.jsx:1-388](file://frontend/src/App.jsx#L1-L388)
+- [package.json:1-30](file://package.json#L1-L30)
 
 ## Core Components
-This section maps the major user-facing components and their responsibilities as implemented in the single file.
+The application consists of several major components working together to provide a comprehensive career guidance experience.
 
-- Profile and Readiness Dashboard
-  - Displays education level, current skills, interests, and career goal.
-  - Shows a Career Readiness Score with visual ring and trend indicator.
-  - Provides quick stats on skills match for AI/ML and Full Stack paths, plus market demand signals.
+### Backend Services
+- **Express.js Server**: Handles HTTP requests, CORS configuration, JSON parsing, and static file serving
+- **API Router**: Manages RESTful endpoints for student profiles, analysis pipeline, and progress tracking
+- **Database Manager**: Provides SQLite connection, schema initialization, and data persistence
+- **Agent Orchestration**: Coordinates the multi-agent pipeline execution and result synthesis
 
-- AI Career Coach Chat
-  - Chat area with pre-populated conversation demonstrating guidance.
-  - Input field and suggested question buttons; typing indicator and simulated responses.
-  - Emphasizes hybrid path recommendation based on profile and market context.
+### Frontend Components
+- **Main Application**: React component managing global state, student selection, and analysis workflow
+- **Chat Interface**: Conversational interface with typing indicators and bilingual responses
+- **Command Center**: Visual pipeline showing agent execution status and results
+- **Profile Management**: Student profile editing and display with real-time updates
+- **Data Visualization**: Charts and progress indicators for skills, market analysis, and readiness scores
 
-- Multi-Agent Pipeline Visualization
-  - Six agent cards: Career Coach (orchestrator), Skill Assessment (evaluator), Market Intel (Pakistan + Remote), Career Path (planner), Roadmap Gen (builder), Progress Tracker (monitor).
-  - “Run Analysis” button triggers sequential activation animation across agents.
-
-- Skill Gap Analysis
-  - Strengths and gaps presented as progress bars with percentages.
-  - Highlights key technologies to learn for both paths.
-
-- Market Intelligence
-  - Local and remote tabs showing top demand roles, salary ranges, hiring hubs, and platforms suitable for Pakistani developers.
-
-- 4-Week Action Plan
-  - Weekly checklists with realistic tasks: foundation, build, ML intro, and launch phases.
-  - Encourages portfolio development, deployment, and interview preparation.
-
-- Portfolio Project Recommendations
-  - Three curated projects balancing Full Stack and AI/ML skills with time estimates and impact ratings.
+### Agent System
+- **Career Coach Orchestrator**: Central coordinator that manages the entire analysis pipeline
+- **Skill Assessment Agent**: Evaluates student skills against target role requirements
+- **Market Intelligence Agent**: Analyzes local and remote market demand for career paths
+- **Progress Tracker Agent**: Monitors task completion and recalculates readiness scores
 
 **Section sources**
-- [index.html:75-527](file://index.html#L75-L527)
+- [routes/api.js:1-176](file://routes/api.js#L1-L176)
+- [frontend/src/components/CommandCenter.jsx:1-531](file://frontend/src/components/CommandCenter.jsx#L1-L531)
+- [agents/careerCoachOrchestrator.js:1-337](file://agents/careerCoachOrchestrator.js#L1-L337)
 
 ## Architecture Overview
-CareerCompass implements a conceptual multi-agent pipeline within a single-page frontend. While no external APIs are connected in this prototype, the UI simulates how agents collaborate to analyze a student’s profile and generate actionable guidance.
+CareerCompass implements a sophisticated full-stack architecture with clear separation between frontend, backend, and data layers, connected through RESTful APIs.
 
+### Request Flow
 ```mermaid
 sequenceDiagram
 participant User as "User"
-participant Chat as "Chat Interface"
-participant Agents as "Multi-Agent Pipeline"
-participant Coach as "Career Coach"
-participant Skill as "Skill Assessment"
-participant Market as "Market Intel"
-participant Path as "Career Path"
-participant Roadmap as "Roadmap Gen"
-participant Progress as "Progress Tracker"
-User->>Chat : "Ask a question"
-Chat->>Agents : "Trigger analysis"
-Agents->>Skill : "Evaluate current skills"
-Skill-->>Agents : "Strengths and gaps"
-Agents->>Market : "Fetch local/remote demand"
-Market-->>Agents : "Demand trends and salaries"
-Agents->>Path : "Recommend short-term vs long-term path"
-Path-->>Agents : "Hybrid path suggestion"
-Agents->>Roadmap : "Generate 4-week plan"
-Roadmap-->>Agents : "Checklist and milestones"
-Agents->>Progress : "Set baseline and tracking"
-Progress-->>Agents : "Readiness score and updates"
-Agents-->>Chat : "Synthesized response"
-Chat-->>User : "Guidance and next steps"
+participant Frontend as "React App"
+participant Backend as "Express Server"
+participant Orchestrator as "Career Coach"
+participant Agents as "Multi-Agent System"
+participant Database as "SQLite"
+User->>Frontend : "Ask career question"
+Frontend->>Backend : "POST /api/coach/analyze"
+Backend->>Orchestrator : "runPipeline(studentId, query)"
+Orchestrator->>Database : "Fetch student profile"
+Database-->>Orchestrator : "Student data"
+Orchestrator->>Agents : "Execute skill assessment"
+Agents-->>Orchestrator : "Skills analysis"
+Orchestrator->>Agents : "Execute market intelligence"
+Agents-->>Orchestrator : "Market data"
+Orchestrator->>Agents : "Generate roadmap"
+Agents-->>Orchestrator : "Action plan"
+Orchestrator->>Database : "Update readiness score"
+Database-->>Orchestrator : "Confirmation"
+Orchestrator-->>Backend : "Unified response"
+Backend-->>Frontend : "Analysis results"
+Frontend-->>User : "Display insights"
 ```
 
 **Diagram sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:228-281](file://index.html#L228-L281)
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:315-390](file://index.html#L315-L390)
-- [index.html:392-458](file://index.html#L392-L458)
+- [routes/api.js:118-142](file://routes/api.js#L118-L142)
+- [agents/careerCoachOrchestrator.js:210-337](file://agents/careerCoachOrchestrator.js#L210-L337)
+- [frontend/src/App.jsx:172-238](file://frontend/src/App.jsx#L172-L238)
+
+### Database Schema
+The SQLite database provides persistent storage for student profiles, market signals, roadmaps, and progress tracking with proper relationships and constraints.
+
+**Section sources**
+- [database/db.js:59-125](file://database/db.js#L59-L125)
+- [database/seed.js:43-209](file://database/seed.js#L43-L209)
 
 ## Detailed Component Analysis
 
-### Chat Interface
-- Purpose: Provide conversational guidance grounded in profile data and simulated agent outputs.
-- Behavior:
-  - Accepts typed messages and suggested questions.
-  - Shows a typing indicator before delivering a response.
-  - Cycles through predefined responses that reflect hybrid path advice, freelancing tips, remote job strategies, portfolio recommendations, and readiness scoring.
+### Express.js Backend
+The backend provides a robust API layer with comprehensive error handling, input validation, and database integration.
 
-```mermaid
-flowchart TD
-Start(["User sends message"]) --> Validate["Validate input"]
-Validate --> |Empty| End(["No action"])
-Validate --> |Valid| AppendUser["Append user message"]
-AppendUser --> Typing["Show typing indicator"]
-Typing --> Delay["Simulate processing delay"]
-Delay --> RemoveTyping["Remove typing indicator"]
-RemoveTyping --> AppendCoach["Append coach response"]
-AppendCoach --> Scroll["Scroll to bottom"]
-Scroll --> End
-```
+#### API Endpoints
+- **GET /api/students**: Lists all available students for profile switching
+- **PATCH /api/students/:id**: Updates student profile fields with validation
+- **GET /api/students/:id**: Returns complete student profile with progress data
+- **POST /api/coach/analyze**: Executes the full multi-agent pipeline
+- **POST /api/progress/toggle**: Toggles task completion and recalculates readiness score
 
-**Diagram sources**
-- [index.html:565-628](file://index.html#L565-L628)
+#### Error Handling
+All endpoints include comprehensive input validation, proper HTTP status codes, and meaningful error messages for both client-side and debugging purposes.
 
 **Section sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:565-628](file://index.html#L565-L628)
+- [routes/api.js:15-176](file://routes/api.js#L15-L176)
 
-### Multi-Agent Pipeline Visualization
-- Purpose: Demonstrate collaboration among specialized agents to produce career guidance.
-- Agents:
-  - Career Coach (Orchestrator)
-  - Skill Assessment (Evaluator)
-  - Market Intel (Pakistan + Remote)
-  - Career Path (Planner)
-  - Roadmap Gen (Builder)
-  - Progress Tracker (Monitor)
-- Interaction:
-  - “Run Analysis” sequentially activates each agent card with status indicators and completes with a summary state.
+### React Frontend
+The frontend is built with modern React patterns, providing an intuitive user interface with real-time updates and smooth animations.
 
-```mermaid
-classDiagram
-class CareerCoach {
-+orchestrate()
-}
-class SkillAssessment {
-+evaluate()
-}
-class MarketIntel {
-+analyzeLocal()
-+analyzeRemote()
-}
-class CareerPath {
-+recommendShortTerm()
-+recommendLongTerm()
-}
-class RoadmapGen {
-+generatePlan()
-}
-class ProgressTracker {
-+trackScore()
-}
-CareerCoach --> SkillAssessment : "uses"
-CareerCoach --> MarketIntel : "uses"
-CareerCoach --> CareerPath : "uses"
-CareerCoach --> RoadmapGen : "uses"
-CareerCoach --> ProgressTracker : "uses"
-```
+#### Main Application Flow
+- **Student Selection**: Dropdown menu for switching between different student profiles
+- **Analysis Pipeline**: Real-time visualization of agent execution with step-by-step progress
+- **Result Display**: Comprehensive presentation of skills analysis, market insights, and action plans
+- **Interactive Features**: Editable profiles, task toggling, and dynamic score updates
 
-**Diagram sources**
-- [index.html:228-281](file://index.html#L228-L281)
+#### Component Architecture
+- **CommandCenter**: Visual pipeline showing agent execution with animated states
+- **ChatPanel**: Conversational interface with typing indicators and bilingual responses
+- **ProfileCard**: Student information display with edit capabilities
+- **ScorePanel**: Readiness score visualization with trend indicators
 
 **Section sources**
-- [index.html:228-281](file://index.html#L228-L281)
-- [index.html:630-657](file://index.html#L630-L657)
+- [frontend/src/App.jsx:82-388](file://frontend/src/App.jsx#L82-L388)
+- [frontend/src/components/CommandCenter.jsx:286-531](file://frontend/src/components/CommandCenter.jsx#L286-L531)
 
-### Skill Gap Analysis
-- Purpose: Visualize strengths and gaps to guide learning priorities.
-- Features:
-  - Strengths shown with high completion percentages.
-  - Gaps highlighted with lower percentages to indicate focus areas.
-- Impact: Helps students understand where to invest effort for both Full Stack and AI/ML paths.
+### Multi-Agent System
+The agent system implements a sophisticated pipeline where each agent has specific responsibilities and communicates through well-defined interfaces.
 
-**Section sources**
-- [index.html:283-313](file://index.html#L283-L313)
+#### Agent Responsibilities
+- **Career Coach Orchestrator**: Coordinates the entire pipeline, resolves career targets, and synthesizes final recommendations
+- **Skill Assessment Agent**: Compares student skills against target role requirements using normalized string matching
+- **Market Intelligence Agent**: Queries market signals database and generates localized summaries for Pakistani developers
+- **Progress Tracker Agent**: Calculates readiness scores using weighted formulas and tracks task completion
 
-### Market Intelligence
-- Purpose: Provide localized and global insights to inform decisions.
-- Tabs:
-  - Local: Top demand roles, salary ranges in PKR, and hiring hubs in Pakistan.
-  - Remote: Global demand, salary ranges in USD, and platforms for Pakistani developers.
-- Value: Bridges understanding of immediate job readiness and long-term specialization opportunities.
+#### Execution Pipeline
+The orchestrator executes agents in sequence, passing structured data between each step and maintaining an execution log for transparency.
 
 **Section sources**
-- [index.html:315-390](file://index.html#L315-L390)
+- [agents/careerCoachOrchestrator.js:210-337](file://agents/careerCoachOrchestrator.js#L210-L337)
+- [agents/skillAssessmentAgent.js:34-74](file://agents/skillAssessmentAgent.js#L34-L74)
+- [agents/marketIntelligenceAgent.js:81-119](file://agents/marketIntelligenceAgent.js#L81-L119)
+- [agents/progressTrackerAgent.js:64-134](file://agents/progressTrackerAgent.js#L64-L134)
 
-### 4-Week Action Plan
-- Purpose: Convert insights into a concrete, time-bound plan.
-- Structure:
-  - Week 1: Foundation (Node.js crash course, GitHub setup, REST API, industry report).
-  - Week 2: Build (portfolio project, Docker basics, coding practice, deployment).
-  - Week 3: ML Intro (Google ML Crash Course, Pandas/NumPy, simple model, LinkedIn update).
-  - Week 4: Launch (portfolio polish, blog post, applications, mock interview).
-- Outcome: Moves students from assessment to execution with measurable milestones.
+### Database Layer
+The SQLite database provides persistent storage with proper schema design and data integrity constraints.
 
-**Section sources**
-- [index.html:392-458](file://index.html#L392-L458)
+#### Schema Design
+- **students**: Core student profiles with education level, skills, interests, and readiness metrics
+- **market_signals**: Market demand data for different career paths with local and remote indicators
+- **roadmaps**: Generated career roadmaps with weekly tasks and portfolio project recommendations
+- **progress_logs**: Task completion tracking with timestamps and status management
 
-### Portfolio Project Recommendations
-- Purpose: Suggest impactful projects aligned with both paths.
-- Projects:
-  - Full Stack Task Manager (React, Node.js, MongoDB, Socket.io).
-  - ML Sentiment Analyzer (Python, Flask, NLTK, Scikit-learn).
-  - Pakistan Job Trends Dashboard (React, Chart.js, Python, API).
-- Rationale: Demonstrates practical application of skills and builds a strong portfolio for local and remote markets.
+#### Data Persistence
+All database operations automatically persist changes to disk, ensuring data durability across application restarts.
 
 **Section sources**
-- [index.html:460-516](file://index.html#L460-L516)
+- [database/db.js:59-125](file://database/db.js#L59-L125)
+- [database/seed.js:43-209](file://database/seed.js#L43-L209)
 
 ## Dependency Analysis
-- External dependencies:
-  - Tailwind CSS via CDN for styling.
-  - Google Fonts (Inter) for typography.
-- Internal dependencies:
-  - Inline CSS defines animations and component styles.
-  - Inline JavaScript handles chat interactions, pipeline animation, tab switching, modal behavior, and score counter animation.
-- Coupling:
-  - High cohesion within the single file; low coupling due to absence of external modules or services.
-- Integration points:
-  - No live API integrations; all data is static or simulated for demo purposes.
+The project uses a modern JavaScript ecosystem with clear separation between frontend and backend dependencies.
+
+### Backend Dependencies
+- **Express.js**: Web framework for building RESTful APIs
+- **CORS**: Cross-origin resource sharing for frontend-backend communication
+- **SQL.js**: In-memory SQLite database for persistent data storage
+- **Dotenv**: Environment variable management for configuration
+
+### Frontend Dependencies
+- **React**: Component-based UI library for building interactive interfaces
+- **Framer Motion**: Animation library for smooth transitions and visual effects
+- **Lucide React**: Icon library for consistent visual elements
+- **Vite**: Build tool for fast development and optimized production builds
+- **Tailwind CSS**: Utility-first CSS framework for responsive design
+
+### Internal Dependencies
+- **Modular Architecture**: Clear separation between agents, routes, and database modules
+- **API Abstraction**: Shared fetch wrapper for consistent error handling and response parsing
+- **Component Composition**: Reusable React components with prop-based configuration
 
 ```mermaid
 graph LR
-HTML["index.html"] --> Tailwind["Tailwind CSS (CDN)"]
-HTML --> Fonts["Google Fonts (Inter)"]
-HTML --> JS["Inline JavaScript"]
-HTML --> CSS["Inline CSS"]
+subgraph "Frontend Dependencies"
+A["React 18"] --> B["Framer Motion"]
+A --> C["Lucide React"]
+D["Vite"] --> E["Tailwind CSS"]
+end
+subgraph "Backend Dependencies"
+F["Express.js"] --> G["CORS"]
+F --> H["SQL.js"]
+F --> I["Dotenv"]
+end
+subgraph "Internal Modules"
+J["Agents"] --> K["Routes"]
+K --> L["Database"]
+M["Frontend Components"] --> N["API Client"]
+end
 ```
 
 **Diagram sources**
-- [index.html:1-21](file://index.html#L1-L21)
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:565-681](file://index.html#L565-L681)
+- [package.json:23-28](file://package.json#L23-L28)
+- [frontend/package.json:11-23](file://frontend/package.json#L11-L23)
 
 **Section sources**
-- [index.html:1-21](file://index.html#L1-L21)
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:565-681](file://index.html#L565-L681)
+- [package.json:23-28](file://package.json#L23-L28)
+- [frontend/package.json:11-23](file://frontend/package.json#L11-L23)
+- [frontend/src/api.js:1-64](file://frontend/src/api.js#L1-L64)
 
 ## Performance Considerations
-- Single-file simplicity reduces network requests and improves load time for demos.
-- Animations are lightweight CSS transitions and keyframes; ensure they do not overwhelm low-end devices.
-- Chat responses are pre-defined strings; avoid heavy DOM manipulations by reusing functions for appending messages and managing scroll position.
-- For future scalability:
-  - Extract CSS and JS into separate files for maintainability.
-  - Introduce lazy loading for heavier content if needed.
-  - Cache repeated computations if dynamic features are added.
+The full-stack architecture provides several performance optimizations and scalability considerations.
 
-[No sources needed since this section provides general guidance]
+### Backend Optimization
+- **Database Indexing**: SQLite queries are optimized with proper indexing strategies
+- **Connection Pooling**: Single database connection managed through singleton pattern
+- **Request Validation**: Early input validation prevents unnecessary processing
+- **Error Handling**: Comprehensive error handling prevents application crashes
+
+### Frontend Optimization
+- **Component Lazy Loading**: React components are organized for optimal loading
+- **Animation Performance**: Framer Motion uses GPU-accelerated animations
+- **State Management**: Efficient React hooks minimize re-renders
+- **Bundle Optimization**: Vite provides optimized production builds
+
+### Scalability Considerations
+- **Modular Architecture**: Easy to add new agents or extend existing functionality
+- **API-First Design**: Clean separation allows for future mobile app development
+- **Database Portability**: SQLite can be migrated to other databases as needed
+- **Container Ready**: Application structure supports Docker containerization
 
 ## Troubleshooting Guide
-Common issues and resolutions observed in the prototype:
-- Chat not responding:
-  - Ensure the input field has focus and text is entered before sending.
-  - Check that event listeners for Enter key and Send button are active.
-- Pipeline animation not starting:
-  - Verify the “Run Analysis” button is enabled and not disabled by previous runs.
-  - Confirm agent cards exist in the DOM when the function executes.
-- Market tabs not switching:
-  - Ensure tab buttons have correct onclick handlers and IDs for local/remote containers.
-- Modal not closing:
-  - Confirm close button calls the appropriate function to toggle visibility.
+Common issues and their solutions in the full-stack architecture.
 
-Operational notes:
-- Prototype disclaimer: No real AI agents or APIs are connected; all outputs are simulated for demonstration.
-- Browser compatibility: Works best in modern browsers supporting ES6 features and CSS animations.
+### Backend Issues
+- **Server Not Starting**: Check port availability and environment variables
+- **Database Errors**: Verify SQLite file permissions and schema initialization
+- **API Route Conflicts**: Ensure proper route ordering and parameter validation
+- **Agent Execution Failures**: Check agent module imports and database connectivity
+
+### Frontend Issues
+- **Network Requests**: Verify backend server is running and CORS is properly configured
+- **Component Rendering**: Check React state management and prop passing
+- **Animation Issues**: Ensure Framer Motion is properly initialized
+- **Build Errors**: Validate Vite configuration and dependency versions
+
+### Agent System Issues
+- **Pipeline Execution**: Monitor agent execution logs for detailed error information
+- **Data Consistency**: Verify database schema matches expected structure
+- **Input Validation**: Check student ID and query parameter formats
+- **Score Calculation**: Validate readiness score formula inputs and outputs
 
 **Section sources**
-- [index.html:565-681](file://index.html#L565-L681)
-- [index.html:518-526](file://index.html#L518-L526)
+- [server.js:25-37](file://server.js#L25-L37)
+- [routes/api.js:118-176](file://routes/api.js#L118-L176)
+- [agents/careerCoachOrchestrator.js:210-337](file://agents/careerCoachOrchestrator.js#L210-L337)
 
 ## Conclusion
-CareerCompass demonstrates a focused, hackathon-ready prototype that guides Pakistani CS graduates through a hybrid career strategy: immediate job readiness via Full Stack Web Development and long-term specialization in AI/ML. The single-file architecture keeps the application portable and easy to present, while the multi-agent pipeline conceptually models how specialized tools collaborate to produce personalized roadmaps. With clear sections for skill assessment, market intelligence, and actionable planning, the platform offers both conceptual clarity for beginners and a technical blueprint for developers extending the prototype.
+CareerCompass has successfully evolved from a simple single-file prototype into a sophisticated full-stack application that provides comprehensive career guidance for Pakistani students. The modern architecture with Express.js backend, React frontend, multi-agent system, and SQLite database offers a scalable foundation for future enhancements.
 
-[No sources needed since this section summarizes without analyzing specific files]
+The platform effectively demonstrates how AI-powered career guidance can help students navigate between immediate job readiness through Full Stack development and long-term specialization in AI/ML. With its modular design, comprehensive agent system, and user-friendly interface, CareerCompass serves as both a practical tool and a technical blueprint for similar career guidance applications.
+
+The hybrid approach combining immediate employment preparation with long-term career development addresses the unique needs of Pakistani CS graduates, providing them with actionable insights and concrete next steps for their professional journey.
 
 ## Appendices
-- Practical usage examples:
-  - Use the chat to ask about freelancing, remote jobs, or portfolio projects; observe simulated guidance grounded in profile and market context.
-  - Run the multi-agent pipeline to visualize how agents coordinate and complete analysis steps.
-  - Review skill gaps and follow the 4-week action plan to build competencies and launch your portfolio.
-- Extensibility ideas:
-  - Connect real APIs for market data and skill assessments.
-  - Persist user profiles and progress locally or in a backend service.
-  - Add more agents (e.g., Interview Prep, Networking Advisor) to enrich the pipeline.
+### Practical Usage Examples
+- **Career Analysis**: Use the chat interface to ask about specific career paths like "AI/ML vs Full Stack" to receive personalized guidance
+- **Skill Assessment**: Run the multi-agent pipeline to visualize how agents coordinate and analyze your profile
+- **Progress Tracking**: Toggle tasks in the action plan to see real-time readiness score updates
+- **Profile Management**: Edit student profiles to explore different scenarios and career outcomes
 
-[No sources needed since this section provides general guidance]
+### Extensibility Ideas
+- **Additional Agents**: Implement specialized agents for interview preparation, networking advice, or industry-specific guidance
+- **External Integrations**: Connect to real job market APIs, learning platforms, or portfolio hosting services
+- **Advanced Analytics**: Add machine learning models for more sophisticated career path recommendations
+- **Mobile Application**: Develop native mobile apps using the existing API endpoints
+- **Multi-language Support**: Expand beyond English and Roman Urdu to include regional languages
+
+**Section sources**
+- [spec.md:152-176](file://spec.md#L152-L176)
+- [spec.md:325-340](file://spec.md#L325-L340)

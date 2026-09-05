@@ -2,259 +2,467 @@
 
 <cite>
 **Referenced Files in This Document**
+- [package.json](file://package.json)
+- [server.js](file://server.js)
+- [frontend/package.json](file://frontend/package.json)
+- [frontend/vite.config.js](file://frontend/vite.config.js)
+- [frontend/src/main.jsx](file://frontend/src/main.jsx)
+- [frontend/src/App.jsx](file://frontend/src/App.jsx)
+- [routes/api.js](file://routes/api.js)
+- [database/db.js](file://database/db.js)
 - [index.html](file://index.html)
 </cite>
 
+## Update Summary
+**Changes Made**
+- Updated installation and setup instructions for Node.js environment
+- Added comprehensive development server configuration
+- Documented new React-based frontend with Vite build system
+- Added backend API server setup with Express.js
+- Updated architecture diagrams to reflect new multi-file structure
+- Enhanced troubleshooting section for development environment issues
+
 ## Table of Contents
 1. [Introduction](#introduction)
-2. [Project Structure](#project-structure)
-3. [Core Components](#core-components)
-4. [Architecture Overview](#architecture-overview)
-5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Development Server](#development-server)
+5. [Project Structure](#project-structure)
+6. [Core Components](#core-components)
+7. [Architecture Overview](#architecture-overview)
+8. [Detailed Component Analysis](#detailed-component-analysis)
+9. [API Endpoints](#api-endpoints)
+10. [Database Setup](#database-setup)
+11. [Performance Considerations](#performance-considerations)
+12. [Troubleshooting Guide](#troubleshooting-guide)
+13. [Conclusion](#conclusion)
 
 ## Introduction
-CareerCompass is a single-file, client-side prototype that helps Pakistani students explore career paths, chat with an AI-style coach, run a simulated multi-agent analysis, review skill gaps, and follow a 4-week action plan. You can run it immediately by opening index.html in any modern web browser—no installation or server setup required.
+CareerCompass is an AI-powered career guidance platform designed specifically for Pakistani students. The application has evolved from a simple single-file prototype into a full-featured web application with a modern development stack. It helps students explore career paths, interact with an AI-style coach, run multi-agent analysis pipelines, assess skill gaps, review market insights, and follow structured 4-week action plans.
 
-Key highlights:
-- Zero dependencies to install; uses Tailwind CSS via CDN for styling
-- Fully client-side JavaScript for interactivity (chat, pipeline animation, tabs, modal)
-- Designed for modern browsers with support for CSS backdrop-filter and animations
+**Key Features:**
+- **Modern Development Stack**: Built with React, Vite, Tailwind CSS, and Express.js
+- **Multi-Agent System**: Six specialized agents collaborate to provide comprehensive career guidance
+- **Real-time Database**: SQLite database with persistent student profiles and progress tracking
+- **Bilingual Support**: English and Roman Urdu interface for Pakistani students
+- **Responsive Design**: Mobile-first approach with dark theme UI
+
+**Updated Architecture:**
+The application now consists of a separate frontend (React + Vite) and backend (Express.js) with a RESTful API connecting them, replacing the original single-file HTML prototype.
+
+## Prerequisites
+Before setting up CareerCompass, ensure you have the following installed:
+
+### Required Software
+- **Node.js** (v18 or higher): JavaScript runtime environment
+- **npm** (v9 or higher): Package manager for Node.js
+- **Git**: Version control system (optional but recommended)
+
+### System Requirements
+- **Operating System**: Windows, macOS, or Linux
+- **Memory**: Minimum 4GB RAM (8GB recommended for smooth development)
+- **Storage**: At least 500MB free space for dependencies and build artifacts
+- **Browser**: Modern browser with ES6+ support (Chrome, Firefox, Safari, Edge)
+
+### Optional Tools
+- **VS Code**: Recommended IDE with extensions for React and JavaScript
+- **Postman**: For testing API endpoints
+- **SQLite Browser**: For database inspection and management
+
+## Installation
+Follow these steps to set up CareerCompass on your local machine:
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/your-username/Career_Compass-Hackathon.git
+cd Career_Compass-Hackathon
+```
+
+### Step 2: Install Backend Dependencies
+```bash
+npm install
+```
+
+This installs the core server dependencies including Express.js, CORS, dotenv, and SQL.js.
+
+### Step 3: Install Frontend Dependencies
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+This installs React, Vite, Tailwind CSS, and other frontend dependencies.
+
+### Step 4: Initialize Database
+```bash
+npm run seed
+```
+
+This creates the SQLite database file (`career_compass.db`) and seeds it with sample data including Ali Khan's profile.
+
+## Development Server
+CareerCompress uses a dual-server setup for development:
+
+### Start the Backend Server
+```bash
+npm start
+```
+
+The backend server will start on `http://localhost:3000` and serve the API endpoints.
+
+### Start the Frontend Development Server
+```bash
+npm run frontend:dev
+```
+
+The frontend development server will start on `http://localhost:5173` with hot module replacement enabled.
+
+### Development Workflow
+1. **Backend Changes**: Restart the backend server when modifying server-side code
+2. **Frontend Changes**: Changes automatically reload in the browser thanks to Vite's HMR
+3. **Database Changes**: Use `npm run seed` to reset the database to initial state
+
+### Production Build
+```bash
+npm run frontend:build
+```
+
+This creates optimized production files in the `frontend/dist` directory.
 
 ## Project Structure
-The application is contained entirely within one HTML file. It includes:
-- A responsive layout with sections for Profile, Coach Chat, Multi-Agent Pipeline, Skills, Market Insights, and Action Plan
-- Inline styles and Tailwind utility classes for consistent design
-- Embedded JavaScript for all interactive behaviors
+The application follows a modular architecture with clear separation of concerns:
+
+```
+Career_Compass-Hackathon/
+├── frontend/                 # React frontend application
+│   ├── src/
+│   │   ├── components/       # Reusable React components
+│   │   ├── i18n/            # Internationalization files
+│   │   ├── App.jsx          # Main application component
+│   │   ├── main.jsx         # Application entry point
+│   │   └── api.js           # API client functions
+│   ├── index.html           # HTML template
+│   ├── package.json         # Frontend dependencies
+│   └── vite.config.js       # Vite configuration
+├── routes/                  # Express.js API routes
+│   ├── api.js              # Main API router
+│   └── health.js           # Health check endpoint
+├── database/               # Database configuration
+│   ├── db.js               # Database connection and utilities
+│   └── seed.js             # Database seeding script
+├── agents/                 # Multi-agent system
+│   ├── README.md           # Agent documentation
+│   ├── careerCoachOrchestrator.js
+│   └── [other agent files]
+├── server.js              # Express.js server entry point
+├── package.json           # Backend dependencies
+└── index.html             # Original prototype (reference)
+```
+
+**Key Architectural Changes:**
+- **Modular Frontend**: React components replace inline JavaScript
+- **RESTful API**: Express.js server handles business logic and database operations
+- **Separate Build Process**: Vite provides fast development and optimized production builds
+- **Persistent Storage**: SQLite database replaces static data
+
+## Core Components
+The application consists of several key components that work together to provide career guidance:
+
+### Profile Management
+- **Student Profiles**: Store education level, skills, interests, and career goals
+- **Edit Profile Modal**: Interactive form for updating student information
+- **Profile Validation**: Ensures data integrity and proper formatting
+
+### AI Career Coach Chat
+- **Real-time Messaging**: WebSocket-like experience with typing indicators
+- **Contextual Responses**: Coaches responses based on student profile and query
+- **Bilingual Support**: English and Roman Urdu language options
+
+### Multi-Agent Pipeline
+- **Six Specialized Agents**: Each agent handles specific aspects of career analysis
+- **Sequential Processing**: Agents work in coordinated sequence for optimal results
+- **Progress Visualization**: Real-time animation showing pipeline execution
+
+### Skill Gap Assessment
+- **Competency Mapping**: Compares current skills against target role requirements
+- **Gap Identification**: Highlights areas needing improvement
+- **Progress Tracking**: Monitors skill development over time
+
+### Market Intelligence
+- **Local & Remote Data**: Provides insights for both Pakistani and global markets
+- **Salary Ranges**: Current compensation data for various roles
+- **Demand Analysis**: Tracks hiring trends and opportunities
+
+### Action Plan Generator
+- **4-Week Roadmaps**: Structured learning and project plans
+- **Task Management**: Trackable checklist with completion status
+- **Progress Scoring**: Dynamic readiness score calculation
+
+## Architecture Overview
+The application follows a modern client-server architecture with clear separation between frontend and backend concerns:
 
 ```mermaid
 graph TB
-A["index.html"] --> B["Tailwind CSS (CDN)"]
-A --> C["Google Fonts (Inter)"]
-A --> D["Inline Styles"]
-A --> E["Inline JavaScript"]
-E --> F["Chat UI"]
-E --> G["Pipeline Animation"]
-E --> H["Market Tabs"]
-E --> I["Profile Modal"]
+subgraph "Frontend (Vite + React)"
+A[React Components] --> B[API Client]
+B --> C[State Management]
+end
+subgraph "Backend (Express.js)"
+D[API Routes] --> E[Agent Orchestrator]
+E --> F[Individual Agents]
+F --> G[Database Layer]
+end
+subgraph "Database"
+H[SQLite Database]
+end
+A --> |HTTP Requests| D
+G --> H
+F --> G
+style A fill:#e1f5fe
+style D fill:#fff3e0
+style H fill:#f3e5f5
 ```
 
-**Diagram sources**
-- [index.html:7-21](file://index.html#L7-L21)
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:565-680](file://index.html#L565-L680)
+**Data Flow:**
+1. User interacts with React components
+2. Frontend sends HTTP requests to Express.js API
+3. Backend processes requests through agent system
+4. Database operations handle data persistence
+5. Results are returned to frontend for display
 
-**Section sources**
-- [index.html:1-70](file://index.html#L1-L70)
-- [index.html:72-527](file://index.html#L72-L527)
-- [index.html:565-680](file://index.html#L565-L680)
-
-## Core Components
-- Profile and Readiness Score: Displays education, skills, interests, career goal, and a readiness score with quick stats for different career paths and market demand.
-- AI Career Coach Chat: A chat interface where you can type questions or use suggested prompts to receive guided responses.
-- Multi-Agent Pipeline: A visual simulation of six agents collaborating to analyze your profile and generate insights.
-- Skill Gap Assessment: Strengths and gaps with progress bars indicating proficiency levels.
-- Pakistan Job Market Insights: Local and remote job market data with salary ranges and hiring hubs.
-- 4-Week Action Plan: A weekly checklist to build skills and prepare for opportunities.
-
-How to use each component:
-- Profile viewing: Scroll to the top section to see your profile card and readiness score. Click Edit Profile to open the modal and update fields.
-- AI coach chat: Type a question in the input box and press Enter or click Send. Alternatively, click any suggested question below the chat area.
-- Run multi-agent pipeline: Click Run Analysis to animate the agent cards through their roles and complete state.
-- Explore skill gaps: Review strengths and gaps panels to understand areas to improve.
-- Navigate market insights: Toggle between Local and Remote tabs to view relevant information.
-- Follow the 4-week plan: Check off tasks week by week to track progress.
-
-**Section sources**
-- [index.html:74-170](file://index.html#L74-L170)
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:228-281](file://index.html#L228-L281)
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:315-390](file://index.html#L315-L390)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:529-562](file://index.html#L529-L562)
-
-## Architecture Overview
-This is a single-page, client-only application. All logic runs in the browser using inline JavaScript. Styling is provided by Tailwind CSS loaded from a CDN. There are no backend services or external APIs connected in this prototype.
-
-```mermaid
-sequenceDiagram
-participant U as "User"
-participant P as "Profile Section"
-participant C as "Coach Chat"
-participant M as "Multi-Agent Pipeline"
-participant S as "Skills Panel"
-participant K as "Market Insights"
-participant L as "Action Plan"
-U->>P : View profile and readiness score
-U->>C : Type message or click suggested prompt
-C-->>U : Append user message and show typing indicator
-C-->>U : Display coach response after delay
-U->>M : Click Run Analysis
-M-->>U : Animate agent cards through active/completed states
-U->>S : Review strengths and gaps
-U->>K : Toggle Local/Remote tabs
-U->>L : Check off weekly tasks
-```
-
-**Diagram sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:228-281](file://index.html#L228-L281)
-- [index.html:283-313](file://index.html#L283-L313)
-- [index.html:315-390](file://index.html#L315-L390)
-- [index.html:392-458](file://index.html#L392-L458)
-- [index.html:565-680](file://index.html#L565-L680)
+**Communication Protocol:**
+- **RESTful API**: JSON-based communication between frontend and backend
+- **CORS Enabled**: Allows cross-origin requests during development
+- **Error Handling**: Comprehensive error responses with descriptive messages
 
 ## Detailed Component Analysis
 
-### Profile and Readiness Score
-- Displays education level, current skills, interests, and a career goal statement.
-- Shows a circular readiness score with animated counter and quick stats for path match percentages and market demand.
+### Frontend Architecture
+The frontend is built with React and Vite, providing a modern development experience:
 
-Usage tips:
-- Use the Edit Profile button to open the modal and adjust fields like education, institution, skills, interests, and career question.
+#### Component Structure
+- **App.jsx**: Main application container managing global state
+- **Component Modules**: Modular components for each UI section
+- **API Integration**: Centralized API client for backend communication
+- **Internationalization**: Language switching between English and Roman Urdu
+
+#### State Management
+- **React Hooks**: useState and useEffect for component-level state
+- **Global State**: Context API for shared application state
+- **Optimistic Updates**: Immediate UI feedback with background synchronization
 
 **Section sources**
-- [index.html:74-170](file://index.html#L74-L170)
-- [index.html:529-562](file://index.html#L529-L562)
-- [index.html:667-680](file://index.html#L667-L680)
+- [frontend/src/App.jsx:1-388](file://frontend/src/App.jsx#L1-L388)
+- [frontend/src/main.jsx:1-14](file://frontend/src/main.jsx#L1-L14)
 
-### AI Career Coach Chat
-- Supports sending messages via Enter key or Send button.
-- Provides suggested prompts to quickly start conversations.
-- Simulates typing indicators and cycles through predefined responses.
+### Backend API Server
+The Express.js server handles all business logic and database operations:
 
-Interaction flow:
-```mermaid
-sequenceDiagram
-participant U as "User"
-participant CHAT as "Chat Input"
-participant JS as "JavaScript Logic"
-participant UI as "Chat Area"
-U->>CHAT : Type question and press Enter or click Send
-CHAT->>JS : sendMessage()
-JS->>UI : appendMessage(user)
-JS->>UI : showTyping()
-JS-->>UI : removeTyping() after delay
-JS->>UI : appendMessage(coach response)
+#### API Endpoints
+- **Student Management**: CRUD operations for student profiles
+- **Analysis Pipeline**: Multi-agent career analysis engine
+- **Progress Tracking**: Task completion and score updates
+- **Health Checks**: Server status monitoring
+
+#### Middleware Stack
+- **CORS**: Cross-origin resource sharing for development
+- **JSON Parsing**: Automatic request body parsing
+- **Static File Serving**: Production asset delivery
+- **Error Handling**: Global error catching and logging
+
+**Section sources**
+- [server.js:1-37](file://server.js#L1-L37)
+- [routes/api.js:1-176](file://routes/api.js#L1-L176)
+
+### Database Layer
+SQLite provides lightweight, file-based database functionality:
+
+#### Schema Design
+- **Students Table**: Core user profile information
+- **Market Signals**: Job market data and trends
+- **Roadmaps**: Generated career plans and projects
+- **Progress Logs**: Task completion tracking
+
+#### Data Persistence
+- **File-based Storage**: Single database file for easy deployment
+- **Automatic Saving**: Changes persisted immediately to disk
+- **Backup Support**: Easy database file copying for backups
+
+**Section sources**
+- [database/db.js:1-125](file://database/db.js#L1-L125)
+
+### Multi-Agent System
+The application features six specialized agents working in coordination:
+
+#### Agent Roles
+- **Career Coach**: Orchestrates the entire analysis process
+- **Skill Assessment**: Evaluates current skills against requirements
+- **Market Intelligence**: Analyzes job market conditions
+- **Career Path**: Determines optimal career trajectories
+- **Roadmap Generator**: Creates actionable 4-week plans
+- **Progress Tracker**: Monitors and updates readiness scores
+
+#### Communication Pattern
+Agents communicate through well-defined interfaces, allowing for modular updates and testing.
+
+## API Endpoints
+The application exposes a RESTful API for frontend communication:
+
+### Student Management
+- **GET /api/students**: List all available students
+- **GET /api/students/:id**: Get specific student profile
+- **PATCH /api/students/:id**: Update student information
+
+### Analysis Pipeline
+- **POST /api/coach/analyze**: Run multi-agent analysis pipeline
+- **Body**: `{ studentId: number, query: string }`
+
+### Progress Tracking
+- **POST /api/progress/toggle**: Toggle task completion status
+- **Body**: `{ studentId: number, taskId: string, status: 'pending'|'completed' }`
+
+### Health Check
+- **GET /api/health**: Server health status
+
+**Section sources**
+- [routes/api.js:18-176](file://routes/api.js#L18-L176)
+
+## Database Setup
+The application uses SQLite for lightweight, embedded database functionality:
+
+### Database Initialization
+```javascript
+// Database is automatically initialized on server startup
+await initDatabase();
 ```
 
-**Diagram sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:565-628](file://index.html#L565-L628)
-
-**Section sources**
-- [index.html:172-226](file://index.html#L172-L226)
-- [index.html:565-628](file://index.html#L565-L628)
-
-### Multi-Agent Pipeline
-- Visualizes six agents: Career Coach (orchestrator), Skill Assessment, Market Intel, Career Path, Roadmap Gen, Progress Tracker.
-- Running the pipeline animates each agent’s status from idle to active to completed.
-
-Behavior overview:
-```mermaid
-flowchart TD
-Start(["Click Run Analysis"]) --> Init["Disable button and reset agent statuses"]
-Init --> Loop{"Next agent?"}
-Loop --> |Yes| Activate["Mark previous as completed<br/>Activate next agent"]
-Activate --> Loop
-Loop --> |No| Finish["Enable button<br/>Show 'Analysis Complete' briefly<br/>Reset button text"]
+### Seeding Data
+```bash
+npm run seed
 ```
 
-**Diagram sources**
-- [index.html:228-281](file://index.html#L228-L281)
-- [index.html:630-657](file://index.html#L630-L657)
+This command creates the database schema and populates it with sample data including:
+- Sample student profiles (Ali Khan as default)
+- Market intelligence data
+- Role skill requirements
+- Template roadmaps and projects
+
+### Database Operations
+- **Automatic Persistence**: All changes saved immediately to disk
+- **Transaction Safety**: ACID compliance for data integrity
+- **Schema Migration**: Future-proof design for schema evolution
 
 **Section sources**
-- [index.html:228-281](file://index.html#L228-L281)
-- [index.html:630-657](file://index.html#L630-L657)
-
-### Skill Gap Assessment
-- Two panels: Strengths (already known skills) and Gaps (skills to close).
-- Each skill shows a percentage bar indicating proficiency or need for improvement.
-
-How to use:
-- Review the Strengths panel to identify what you already know well.
-- Focus on the Gaps panel to prioritize learning targets.
-
-**Section sources**
-- [index.html:283-313](file://index.html#L283-L313)
-
-### Pakistan Job Market Insights
-- Toggle between Local and Remote tabs to view demand, salary ranges, and platforms/hubs.
-- Local tab lists top demand roles, average salaries in PKR, and major hiring cities.
-- Remote tab lists global demand, USD salaries, and platforms suitable for Pakistani developers.
-
-Navigation:
-- Click Local or Remote buttons to switch content.
-
-**Section sources**
-- [index.html:315-390](file://index.html#L315-L390)
-- [index.html:659-665](file://index.html#L659-L665)
-
-### 4-Week Action Plan
-- Four weekly columns with checklists to track progress.
-- Week themes: Foundation, Build, ML Intro, Launch.
-
-How to use:
-- Check off tasks as you complete them to visualize progress across weeks.
-
-**Section sources**
-- [index.html:392-458](file://index.html#L392-L458)
-
-## Dependency Analysis
-- Tailwind CSS is loaded via CDN for styling utilities and theme configuration.
-- Google Fonts provides the Inter font family used throughout the UI.
-- All interactive behavior is implemented with inline JavaScript embedded in the HTML file.
-
-```mermaid
-graph LR
-HTML["index.html"] --> TWC["Tailwind CSS (CDN)"]
-HTML --> FONTS["Google Fonts (Inter)"]
-HTML --> JS["Inline JavaScript"]
-JS --> UI["DOM Manipulation"]
-JS --> ANIM["CSS Animations"]
-```
-
-**Diagram sources**
-- [index.html:7-21](file://index.html#L7-L21)
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:565-680](file://index.html#L565-L680)
-
-**Section sources**
-- [index.html:7-21](file://index.html#L7-L21)
-- [index.html:565-680](file://index.html#L565-L680)
+- [database/db.js:59-125](file://database/db.js#L59-L125)
 
 ## Performance Considerations
-- Single-file architecture keeps load times minimal; only external resources are the Tailwind CDN and Google Fonts.
-- Animations are lightweight CSS transitions and keyframes; avoid excessive DOM updates in tight loops.
-- The chat and pipeline interactions use simple timeouts and intervals; keep delays reasonable for responsiveness.
-- If running offline, ensure internet access for CDN resources or consider downloading Tailwind and fonts locally for fully offline use.
+The application is optimized for both development and production environments:
 
-[No sources needed since this section provides general guidance]
+### Frontend Optimization
+- **Code Splitting**: Vite automatically splits code for faster loading
+- **Asset Optimization**: Images and styles are minified and compressed
+- **Bundle Analysis**: Built-in tools for analyzing bundle size
+
+### Backend Optimization
+- **Connection Pooling**: Efficient database connection management
+- **Request Caching**: Strategic caching for frequently accessed data
+- **Error Boundaries**: Graceful error handling without application crashes
+
+### Database Optimization
+- **Indexed Queries**: Optimized database queries for performance
+- **Connection Reuse**: Persistent database connections throughout server lifetime
+- **Batch Operations**: Efficient bulk data operations where possible
 
 ## Troubleshooting Guide
-Common issues and resolutions:
-- Browser compatibility:
-  - Ensure your browser supports modern CSS features like backdrop-filter and CSS animations. If effects appear missing, try updating to a recent version of Chrome, Edge, Firefox, or Safari.
-- JavaScript execution errors:
-  - If chat messages do not appear or the pipeline does not animate, check that JavaScript is enabled and not blocked by extensions or security settings.
-  - Clear browser cache and reload if the page behaves unexpectedly after changes.
-- Network-related issues:
-  - Since Tailwind CSS and fonts are loaded from CDNs, ensure your network allows these domains. If blocked, the UI may look unstyled or fonts may not render.
-- Modal and tabs not working:
-  - Verify that event handlers are attached (e.g., clicking tabs or opening the profile modal). If not, reload the page or disable interfering browser extensions.
+Common issues and their solutions when running CareerCompass:
 
-If problems persist:
-- Try opening index.html in a different modern browser.
-- Disable ad blockers or privacy extensions temporarily to test if they interfere with CDN loading or script execution.
+### Installation Issues
+**Problem**: npm install fails with permission errors
+**Solution**: 
+- Ensure Node.js version is compatible (v18+)
+- Try running with elevated privileges if needed
+- Clear npm cache: `npm cache clean --force`
 
-[No sources needed since this section provides general guidance]
+**Problem**: Frontend dependencies fail to install
+**Solution**:
+- Delete node_modules folder and reinstall
+- Check internet connectivity for package downloads
+- Verify npm registry accessibility
+
+### Development Server Issues
+**Problem**: Backend server won't start
+**Solution**:
+- Check if port 3000 is already in use
+- Verify all required dependencies are installed
+- Check for syntax errors in server code
+
+**Problem**: Frontend development server not responding
+**Solution**:
+- Ensure port 5173 is available
+- Check for proxy configuration issues
+- Verify CORS settings allow localhost requests
+
+### Database Issues
+**Problem**: Database initialization fails
+**Solution**:
+- Delete existing database file and reseed
+- Check file permissions for database directory
+- Verify SQLite compatibility with Node.js version
+
+**Problem**: Data not persisting between sessions
+**Solution**:
+- Ensure database file has write permissions
+- Check for unhandled exceptions during save operations
+- Verify database path configuration
+
+### API Connection Issues
+**Problem**: Frontend cannot connect to backend
+**Solution**:
+- Verify backend server is running on correct port
+- Check CORS configuration allows frontend origin
+- Inspect browser console for network errors
+
+**Problem**: API requests return 404 or 500 errors
+**Solution**:
+- Check route definitions match frontend calls
+- Verify request payload format matches API expectations
+- Review server logs for detailed error information
+
+### Browser Compatibility
+**Problem**: Features not working in older browsers
+**Solution**:
+- Use modern browsers (Chrome, Firefox, Safari, Edge)
+- Check browser console for JavaScript errors
+- Verify ES6+ feature support
+
+### Performance Issues
+**Problem**: Application feels slow or unresponsive
+**Solution**:
+- Check network tab for slow API responses
+- Monitor memory usage in browser developer tools
+- Optimize large datasets or complex animations
+
+**Section sources**
+- [server.js:26-37](file://server.js#L26-L37)
+- [frontend/vite.config.js:6-15](file://frontend/vite.config.js#L6-L15)
 
 ## Conclusion
-CareerCompass offers a fast, zero-setup way to explore career guidance, interact with an AI-style coach, simulate a multi-agent analysis, assess skills, review market insights, and follow a structured 4-week plan. Open index.html in any modern browser to get started immediately. For best results, use an up-to-date browser that supports modern CSS features and has JavaScript enabled.
+CareerCompass has evolved from a simple single-file prototype into a robust, full-stack web application with modern development practices. The migration to Node.js, React, and Express.js provides a scalable foundation for future enhancements while maintaining the core mission of helping Pakistani students navigate their career journeys.
 
-[No sources needed since this section summarizes without analyzing specific files]
+**Key Benefits of the New Architecture:**
+- **Scalability**: Modular design supports easy addition of new features
+- **Maintainability**: Clear separation of concerns simplifies debugging and updates
+- **Performance**: Optimized build process and efficient data handling
+- **Developer Experience**: Hot reloading and modern tooling enhance productivity
+
+**Getting Started:**
+1. Install Node.js and npm
+2. Clone repository and install dependencies
+3. Seed the database
+4. Start both backend and frontend servers
+5. Access the application at http://localhost:5173
+
+The application maintains its focus on serving Pakistani students while providing a professional-grade development environment that supports rapid iteration and growth. Whether you're exploring career options, assessing skill gaps, or planning your next steps, CareerCompass provides the guidance and structure needed for informed career decisions.
+
+For the quickest start, simply open the original `index.html` file in any modern browser to access the prototype version, though the full development environment offers significantly enhanced functionality and real-time data processing capabilities.

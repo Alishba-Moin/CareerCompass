@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { dbAll, dbRun } from '../database/db.js';
 import { runPipeline } from '../agents/careerCoachOrchestrator.js';
 import { toggleTaskStatus } from '../agents/progressTrackerAgent.js';
+import { buildOrRefreshStudentRoadmap } from './auth.js';
 
 export const apiRouter = Router();
 const db = { dbAll, dbRun };
@@ -109,6 +110,30 @@ apiRouter.get('/students/:id', (req, res) => {
     },
     progress_logs: logs,
   });
+});
+
+/**
+ * GET /api/students/:id/roadmap — Returns the full stored roadmap and multi-agent analysis.
+ */
+apiRouter.get('/students/:id/roadmap', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isFinite(id) || id < 1) {
+    return res.status(400).json({ error: 'Invalid student ID — must be a positive integer.' });
+  }
+
+  const rows = dbAll('SELECT * FROM students WHERE id = ?', [id]);
+  if (rows.length === 0) {
+    return res.status(404).json({ error: 'Student not found' });
+  }
+
+  const student = rows[0];
+  try {
+    const analysis = buildOrRefreshStudentRoadmap(id, student.target_role || student.interests);
+    res.json({ success: true, analysis });
+  } catch (err) {
+    console.error('Roadmap fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch roadmap: ' + err.message });
+  }
 });
 
 /**

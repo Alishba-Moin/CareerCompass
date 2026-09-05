@@ -3,7 +3,23 @@
 <cite>
 **Referenced Files in This Document**
 - [index.html](file://index.html)
+- [careerCoachOrchestrator.js](file://agents/careerCoachOrchestrator.js)
+- [skillAssessmentAgent.js](file://agents/skillAssessmentAgent.js)
+- [marketIntelligenceAgent.js](file://agents/marketIntelligenceAgent.js)
+- [careerPathAgent.js](file://agents/careerPathAgent.js)
+- [roadmapGeneratorAgent.js](file://agents/roadmapGeneratorAgent.js)
+- [progressTrackerAgent.js](file://agents/progressTrackerAgent.js)
+- [db.js](file://database/db.js)
+- [seed.js](file://database/seed.js)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated to reflect fully implemented multi-agent pipeline with six specialized agents
+- Added detailed documentation of actual processing logic in each agent module
+- Enhanced architecture overview to show real data flow between agents
+- Updated component analysis to document real agent capabilities and database integration
+- Added new sections covering agent orchestration, data persistence, and bilingual recommendations
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -11,244 +27,402 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+6. [Agent Processing Logic](#agent-processing-logic)
+7. [Data Flow and Persistence](#data-flow-and-persistence)
+8. [Visual Pipeline Interface](#visual-pipeline-interface)
+9. [Dependency Analysis](#dependency-analysis)
+10. [Performance Considerations](#performance-considerations)
+11. [Troubleshooting Guide](#troubleshooting-guide)
+12. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the multi-agent pipeline visualization that demonstrates sequential agent processing and status tracking. It focuses on six agent cards representing a Career Coach (orchestrator), Skill Assessment (evaluator), Market Intel (Pakistan + Remote), Career Path (planner), Roadmap Gen (builder), and Progress Tracker (monitor). The documentation details how the runPipeline() function orchestrates the sequential activation of agents with visual feedback, including CSS classes and status indicators, and how an interval-based animation system progresses through agents every 700ms to update status dots from gray (idle) to blue (active) to green (completed). It also covers button state management during execution and provides examples of how each agent’s role is represented visually to demonstrate collaborative problem-solving architecture.
+This document explains the fully implemented multi-agent pipeline visualization that demonstrates sequential agent processing with real computational logic and status tracking. The system features six specialized agents representing a Career Coach (orchestrator), Skill Assessment (evaluator), Market Intelligence (Pakistan + Remote), Career Path (planner), Roadmap Generator (builder), and Progress Tracker (monitor). Each agent performs actual data processing using SQLite database queries, deterministic algorithms, and collaborative problem-solving to generate personalized career recommendations. The documentation details how the orchestrator's `runPipeline()` function coordinates the sequential activation of agents with visual feedback, including CSS classes and status indicators, while maintaining real-time progress tracking through an interval-based animation system.
 
 ## Project Structure
-The project is implemented as a single-page application contained within one HTML file. It includes:
-- Tailwind CSS via CDN for styling
-- Custom CSS for glassmorphism, glow effects, animations, and agent card states
-- Inline JavaScript handling chat interactions, tab switching, modal behavior, score animation, and the pipeline orchestration
+The project implements a complete multi-agent system with separate modules for each agent, database management, and a frontend visualization layer:
 
 ```mermaid
 graph TB
-A["index.html"] --> B["Tailwind CSS (CDN)"]
-A --> C["Custom Styles (glass, glow, animations)"]
-A --> D["Inline Scripts<br/>- Chat UI<br/>- Tabs/Modal<br/>- Score Animation<br/>- Pipeline Orchestration"]
+A["Frontend (index.html)"] --> B["Career Coach Orchestrator"]
+B --> C["Skill Assessment Agent"]
+B --> D["Market Intelligence Agent"]
+B --> E["Career Path Agent"]
+B --> F["Roadmap Generator Agent"]
+B --> G["Progress Tracker Agent"]
+C --> H["SQLite Database"]
+D --> H
+E --> H
+F --> H
+G --> H
+H --> I["Students Table"]
+H --> J["Market Signals Table"]
+H --> K["Progress Logs Table"]
+H --> L["Roadmaps Table"]
 ```
 
 **Diagram sources**
-- [index.html:1-21](file://index.html#L1-L21)
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:565-681](file://index.html#L565-L681)
+- [careerCoachOrchestrator.js:22-26](file://agents/careerCoachOrchestrator.js#L22-L26)
+- [db.js:71-120](file://database/db.js#L71-L120)
 
 **Section sources**
-- [index.html:1-21](file://index.html#L1-L21)
-- [index.html:22-43](file://index.html#L22-L43)
-- [index.html:565-681](file://index.html#L565-L681)
+- [index.html:228-281](file://index.html#L228-L281)
+- [careerCoachOrchestrator.js:1-337](file://agents/careerCoachOrchestrator.js#L1-L337)
+- [db.js:1-125](file://database/db.js#L1-L125)
 
 ## Core Components
-- Agent Cards: Six cards represent the pipeline stages. Each card contains an icon, title, subtitle describing its role, and a status dot indicator.
-- Status Indicators: Small circular dots under each card show idle (gray), active (blue with pulse), or completed (green).
-- Pipeline Button: Triggers the runPipeline() function; changes text and disables while running.
-- Pipeline Orchestration: An interval-driven sequence that highlights each agent card in order, updates status dots, and resets after completion.
+The multi-agent system consists of six specialized agents, each with distinct responsibilities and processing capabilities:
 
-Key implementation references:
-- Agent grid and cards: [index.html:237-280](file://index.html#L237-L280)
-- Pipeline button: [index.html:235](file://index.html#L235)
-- runPipeline() logic: [index.html:631-657](file://index.html#L631-L657)
-- CSS for agent-card and active state: [index.html:34-36](file://index.html#L34-L36)
-- Status dot base styles and animations: [index.html:28-33](file://index.html#L28-L33)
+### Agent Roles and Responsibilities
+- **Career Coach (Orchestrator)**: Central coordinator that fetches student profiles, resolves career targets, and sequences other agents
+- **Skill Assessment (Evaluator)**: Compares student skills against target role requirements using deterministic matching algorithms
+- **Market Intelligence (Pakistan + Remote)**: Queries market demand data from SQLite database and generates contextualized summaries
+- **Career Path (Planner)**: Scores predefined career paths against student profiles using weighted scoring algorithms
+- **Roadmap Generator (Builder)**: Creates 4-week action plans with portfolio project recommendations based on skill gaps
+- **Progress Tracker (Monitor)**: Calculates readiness scores using weighted formulas and tracks task completion progress
+
+### Visual Pipeline Interface
+The frontend displays six agent cards with real-time status indicators showing idle (gray), active (blue with pulse), or completed (green) states. The pipeline button triggers the orchestrator's `runPipeline()` function which coordinates the entire processing sequence.
 
 **Section sources**
 - [index.html:237-280](file://index.html#L237-L280)
-- [index.html:235](file://index.html#L235)
-- [index.html:631-657](file://index.html#L631-L657)
-- [index.html:34-36](file://index.html#L34-L36)
-- [index.html:28-33](file://index.html#L28-L33)
+- [careerCoachOrchestrator.js:210-337](file://agents/careerCoachOrchestrator.js#L210-L337)
 
 ## Architecture Overview
-The pipeline visualization models a sequential workflow where each agent processes in turn, providing clear visual feedback to the user. The flow is driven by an interval timer that advances through the agent list, toggling active states and updating status dots accordingly.
+The pipeline follows a sequential workflow where each agent processes data and passes results to the next agent, creating a comprehensive career analysis system:
 
 ```mermaid
 sequenceDiagram
 participant U as "User"
-participant B as "Run Button"
-participant P as "runPipeline()"
-participant I as "Interval Timer"
-participant G as "Agent Grid"
-participant C as "Agent Card i"
-participant S as "Status Dot"
-U->>B : Click "Run Analysis"
-B->>P : Invoke runPipeline()
-P->>G : Reset all cards and statuses
-loop Every 700ms
-P->>I : Start interval
-I-->>P : Tick
-alt Previous agent exists
-P->>C : Remove 'active' class
-P->>S : Set to green (completed)
-end
-alt Current agent exists
-P->>C : Add 'active' class
-P->>S : Set to blue (active) with pulse
-P->>P : Increment index
-else All agents processed
-P->>I : Clear interval
-P->>B : Re-enable and set "Analysis Complete"
-P->>B : Reset text after delay
-end
-end
+participant V as "Visual Pipeline"
+participant O as "Orchestrator"
+participant S as "Skill Assessment"
+participant M as "Market Intel"
+participant P as "Career Path"
+participant R as "Roadmap Gen"
+participant T as "Progress Tracker"
+participant DB as "SQLite Database"
+U->>V : Click "Run Analysis"
+V->>O : runPipeline(studentId, query)
+O->>DB : Fetch student profile
+O->>O : Resolve career target
+O->>S : evaluateSkills(studentSkills, requiredSkills)
+S-->>O : {strengths, gaps, matchPercentage}
+O->>M : analyzeMarket(searchKey)
+M->>DB : Query market_signals
+M-->>O : {local_demand, remote_demand, summary}
+O->>P : selectOptimalPath(student, target)
+P-->>O : {recommended_path, milestones}
+O->>R : generateRoadmap(student, path, gaps)
+R-->>O : {weeks, portfolio_project}
+O->>T : calculateReadinessScore(match%, demand%, ratio)
+T-->>O : readinessScore
+O->>DB : Update student metrics
+O-->>V : Complete pipeline result
 ```
 
 **Diagram sources**
-- [index.html:235](file://index.html#L235)
-- [index.html:631-657](file://index.html#L631-L657)
-- [index.html:237-280](file://index.html#L237-L280)
+- [careerCoachOrchestrator.js:210-337](file://agents/careerCoachOrchestrator.js#L210-L337)
+- [db.js:71-120](file://database/db.js#L71-L120)
 
 ## Detailed Component Analysis
 
-### Agent Cards and Roles
-Each agent card visually communicates its role through iconography, title, and subtitle:
-- Career Coach (Orchestrator): Central coordinator that initiates and sequences other agents.
-- Skill Assessment (Evaluator): Assesses current skills and identifies gaps.
-- Market Intel (Pakistan + Remote): Provides local and global market insights.
-- Career Path (Planner): Synthesizes inputs to propose career pathways.
-- Roadmap Gen (Builder): Generates actionable steps and milestones.
-- Progress Tracker (Monitor): Tracks progress and updates metrics.
+### Career Coach Orchestrator Agent
+The orchestrator serves as the central coordination layer, managing the entire pipeline execution:
 
-Visual representation references:
-- Agent grid and roles: [index.html:237-280](file://index.html#L237-L280)
+**Key Functions:**
+- `resolveTarget()`: Intelligent career target resolution with priority-based matching
+- `buildRecommendation()`: Generates bilingual (English + Roman Urdu) recommendations
+- `runPipeline()`: Main orchestration function coordinating all six agents
 
-**Section sources**
-- [index.html:237-280](file://index.html#L237-L280)
-
-### CSS Classes and Active State Styling
-- .agent-card: Base styling with transition and hover effects.
-- .agent-card.active: Highlights the currently active agent with border color and enhanced shadow.
-- .agent-status: Base style for the status dot.
-- Idle: Gray background (default).
-- Active: Blue background with pulsing animation.
-- Completed: Green background indicating finished processing.
-
-References:
-- Base and active styles: [index.html:34-36](file://index.html#L34-L36)
-- Status dot base and animations: [index.html:28-33](file://index.html#L28-L33)
+**Processing Logic:**
+1. Fetches student profile from SQLite database
+2. Resolves career target using keyword matching and comparison detection
+3. Coordinates sequential execution of remaining five agents
+4. Aggregates results into unified response structure
+5. Persists readiness scores back to database
 
 **Section sources**
-- [index.html:34-36](file://index.html#L34-L36)
-- [index.html:28-33](file://index.html#L28-L33)
+- [careerCoachOrchestrator.js:47-159](file://agents/careerCoachOrchestrator.js#L47-L159)
+- [careerCoachOrchestrator.js:165-198](file://agents/careerCoachOrchestrator.js#L165-L198)
+- [careerCoachOrchestrator.js:210-337](file://agents/careerCoachOrchestrator.js#L210-L337)
 
-### Interval-Based Animation System
-The runPipeline() function uses setInterval to advance through agents every 700ms:
-- On each tick, it marks the previous agent as completed (green) and removes active highlighting.
-- It then activates the next agent (blue with pulse) and increments the index.
-- When all agents are processed, it clears the interval, re-enables the button, shows completion text, and resets the button after a delay.
+### Skill Assessment Agent
+Performs deterministic skill matching between student capabilities and target role requirements:
 
-References:
-- Pipeline orchestration: [index.html:631-657](file://index.html#L631-L657)
+**Algorithm Features:**
+- Case-insensitive normalization for accurate matching
+- Exact string comparison with preserved casing in results
+- Comprehensive gap analysis with percentage calculations
+- Deterministic output ensuring consistent results
 
-```mermaid
-flowchart TD
-Start(["Start runPipeline"]) --> Init["Reset all cards and status dots"]
-Init --> Loop{"Index < Number of Agents?"}
-Loop --> |Yes| Prev["If prev agent exists:<br/>Remove 'active', set status to green"]
-Prev --> Next["Set current agent 'active'<br/>Set status to blue with pulse"]
-Next --> Inc["Increment index"]
-Inc --> Loop
-Loop --> |No| Done["Clear interval<br/>Re-enable button<br/>Show 'Analysis Complete'"]
-Done --> ResetBtn["After delay reset button text"]
-ResetBtn --> End(["End"])
-```
+**Output Structure:**
+- Strengths: Skills the student already possesses
+- Gaps: Missing skills needed for target role
+- Match Percentage: Calculated success rate
+- Total counts for strengths and gaps
 
-**Diagram sources**
+**Section sources**
+- [skillAssessmentAgent.js:16-74](file://agents/skillAssessmentAgent.js#L16-L74)
+
+### Market Intelligence Agent
+Queries and analyzes market demand data for Pakistani tech roles:
+
+**Search Strategy:**
+1. Exact match on domain or role title (case-insensitive)
+2. Partial LIKE match for flexible searching
+3. Fallback to baseline metrics when no matches found
+
+**Contextual Analysis:**
+- Generates human-readable summaries tailored for Pakistani graduates
+- Provides opportunity comparisons between local and remote markets
+- Includes growth trend analysis and platform recommendations
+
+**Section sources**
+- [marketIntelligenceAgent.js:28-60](file://agents/marketIntelligenceAgent.js#L28-L60)
+- [marketIntelligenceAgent.js:81-119](file://agents/marketIntelligenceAgent.js#L81-L119)
+
+### Career Path Agent
+Evaluates and selects optimal career paths using weighted scoring algorithms:
+
+**Scoring Factors:**
+- Education level match (40 points maximum)
+- Interest keyword overlap (12 points per match)
+- Explicit target preference bonus (30 points)
+
+**Available Paths:**
+- AI/ML Engineer (Data & AI domain)
+- Full Stack Web Developer (Web domain)
+- Data Analyst (Data domain)
+- Computer Science Foundation (CS Fundamentals)
+- Data Analytics Entry (Data domain)
+
+**Section sources**
+- [careerPathAgent.js:12-83](file://agents/careerPathAgent.js#L12-L83)
+- [careerPathAgent.js:93-158](file://agents/careerPathAgent.js#L93-L158)
+
+### Roadmap Generator Agent
+Creates personalized 4-week action plans with portfolio project recommendations:
+
+**Week Structure:**
+- Week 1: Foundation - Core Skill Build
+- Week 2: Practice - Course Completion & Exercises
+- Week 3: Build - Portfolio Project Development
+- Week 4: Launch - Job Readiness & Applications
+
+**Portfolio Projects:**
+- Role-specific project templates with technology stacks
+- Estimated durations and impact ratings
+- Real-world applicability for Pakistani job market
+
+**Section sources**
+- [roadmapGeneratorAgent.js:13-49](file://agents/roadmapGeneratorAgent.js#L13-L49)
+- [roadmapGeneratorAgent.js:95-181](file://agents/roadmapGeneratorAgent.js#L95-L181)
+
+### Progress Tracker Agent
+Calculates career readiness scores and manages task completion tracking:
+
+**Readiness Score Formula:**
+- Skill alignment (50% weight): Student's skill match percentage
+- Market demand (30% weight): Remote job market demand percentage
+- Plan progress (20% weight): Completed tasks ratio
+
+**Task Management:**
+- Toggle task status between pending and completed
+- Automatic readiness score recalculation
+- Database persistence of progress updates
+
+**Section sources**
+- [progressTrackerAgent.js:30-43](file://agents/progressTrackerAgent.js#L30-L43)
+- [progressTrackerAgent.js:64-134](file://agents/progressTrackerAgent.js#L64-L134)
+
+## Agent Processing Logic
+The pipeline executes agents sequentially with each agent building upon previous results:
+
+### Step-by-Step Execution Flow
+
+1. **Student Profile Loading**
+   - Fetches student data from SQLite database
+   - Parses JSON skill arrays and interest strings
+   - Validates student existence and data integrity
+
+2. **Career Target Resolution**
+   - Analyzes user query for comparison patterns (e.g., "AI/ML vs Web")
+   - Applies priority-based matching with fallback strategies
+   - Extracts required skills for target role
+
+3. **Skill Assessment Processing**
+   - Normalizes student skills for case-insensitive comparison
+   - Identifies strengths and gaps against target requirements
+   - Calculates match percentage deterministically
+
+4. **Market Intelligence Analysis**
+   - Queries market_signals table for demand metrics
+   - Generates contextualized summaries for Pakistani context
+   - Provides local and remote demand comparisons
+
+5. **Career Path Selection**
+   - Scores predefined paths against student profile
+   - Considers education level, interests, and explicit preferences
+   - Returns optimal path with alternatives
+
+6. **Roadmap Generation**
+   - Creates 4-week structured learning plan
+   - Recommends portfolio projects based on selected path
+   - Integrates skill gaps into weekly task assignments
+
+7. **Progress Tracking and Scoring**
+   - Calculates readiness score using weighted formula
+   - Updates database with computed metrics
+   - Persists results for future reference
+
+**Section sources**
+- [careerCoachOrchestrator.js:222-337](file://agents/careerCoachOrchestrator.js#L222-L337)
+
+## Data Flow and Persistence
+The system maintains data consistency through SQLite database operations:
+
+### Database Schema
+- **students**: Stores personal information, skills, and computed metrics
+- **market_signals**: Contains job market data for different roles
+- **roadmaps**: Saves generated career plans and project recommendations
+- **progress_logs**: Tracks individual task completion status
+
+### Data Persistence Strategy
+- All write operations automatically persist to disk via `saveToDisk()`
+- Read operations use prepared statements for security and performance
+- Foreign key constraints maintain referential integrity
+- JSON fields store complex data structures (skills, roadmaps, projects)
+
+### State Management
+- Readiness scores updated after each pipeline execution
+- Task completion tracked with timestamps
+- Market demand percentages stored for historical analysis
+- Student metrics aggregated across multiple pipeline runs
+
+**Section sources**
+- [db.js:71-120](file://database/db.js#L71-L120)
+- [db.js:36-53](file://database/db.js#L36-L53)
+- [seed.js:43-209](file://database/seed.js#L43-L209)
+
+## Visual Pipeline Interface
+The frontend provides real-time visualization of agent processing with interactive elements:
+
+### Agent Card System
+Each agent card displays:
+- Icon representing agent type
+- Agent name and role description
+- Status indicator dot (idle/active/completed)
+- Glass morphism styling with hover effects
+
+### Animation System
+- **Interval-based progression**: 700ms intervals advance through agents
+- **Status transitions**: Gray → Blue (pulsing) → Green color coding
+- **Active highlighting**: Border color and shadow effects during processing
+- **Completion feedback**: Button state changes and completion messages
+
+### Interactive Elements
+- Pipeline trigger button with disabled state during execution
+- Real-time status updates reflecting backend processing
+- Responsive grid layout adapting to screen sizes
+- Accessibility considerations for keyboard navigation
+
+**Section sources**
+- [index.html:235-280](file://index.html#L235-L280)
 - [index.html:631-657](file://index.html#L631-L657)
-
-**Section sources**
-- [index.html:631-657](file://index.html#L631-L657)
-
-### Button State Management During Execution
-- Before start: Button displays “▶ Run Analysis”.
-- During execution: Button becomes disabled, text changes to “⏳ Analyzing...”, and opacity reduces.
-- After completion: Button re-enabled, text changes to “✓ Analysis Complete”, then resets back to “▶ Run Analysis” after a short delay.
-
-References:
-- Button element and click handler: [index.html:235](file://index.html#L235)
-- State transitions in runPipeline(): [index.html:631-657](file://index.html#L631-L657)
-
-**Section sources**
-- [index.html:235](file://index.html#L235)
-- [index.html:631-657](file://index.html#L631-L657)
-
-### Visual Representation of Collaborative Problem-Solving
-The pipeline demonstrates collaboration by sequentially activating specialized agents:
-- Orchestrator (Career Coach) coordinates the process.
-- Evaluator (Skill Assessment) informs planners about skill gaps.
-- Market Intel provides context for both local and remote opportunities.
-- Planner (Career Path) synthesizes data into actionable pathways.
-- Builder (Roadmap Gen) constructs step-by-step plans.
-- Monitor (Progress Tracker) tracks outcomes and readiness.
-
-This sequence visually communicates how multiple agents collaborate to produce a cohesive career roadmap.
-
-References:
-- Agent roles and layout: [index.html:237-280](file://index.html#L237-L280)
-
-**Section sources**
-- [index.html:237-280](file://index.html#L237-L280)
+- [index.html:28-36](file://index.html#L28-L36)
 
 ## Dependency Analysis
-The pipeline depends on:
-- DOM elements: Agent cards and status dots identified by class selectors and attributes.
-- CSS classes: .agent-card, .agent-card.active, .agent-status, and animation utilities.
-- Timing: setInterval driving the 700ms cadence.
-- Button control: Disabling/enabling and text updates during lifecycle.
+The multi-agent system has well-defined dependencies between components:
+
+### Module Dependencies
+- **Orchestrator** depends on all five specialist agents
+- **Agents** depend on database interface for data access
+- **Frontend** depends on orchestrator API for pipeline execution
+- **Database** provides persistent storage for all components
+
+### Runtime Dependencies
+- SQLite database must be initialized before pipeline execution
+- Student records must exist for pipeline to process
+- Market signals data required for intelligence analysis
+- Progress logs needed for readiness score calculation
+
+### External Dependencies
+- Tailwind CSS for styling and animations
+- SQL.js for in-memory SQLite database operations
+- Node.js runtime for server-side agent execution
 
 ```mermaid
 graph LR
-Btn["Run Button"] --> RP["runPipeline()"]
-RP --> Cards[".agent-card elements"]
-RP --> Status[".agent-status elements"]
-RP --> Timer["setInterval (700ms)"]
-Cards --> CSS["CSS: .agent-card, .agent-card.active"]
-Status --> Anim["Animations: pulse-dot, slide-up"]
+Frontend["Frontend (index.html)"] --> Orchestrator["Career Coach Orchestrator"]
+Orchestrator --> SkillAgent["Skill Assessment Agent"]
+Orchestrator --> MarketAgent["Market Intelligence Agent"]
+Orchestrator --> PathAgent["Career Path Agent"]
+Orchestrator --> RoadmapAgent["Roadmap Generator Agent"]
+Orchestrator --> ProgressAgent["Progress Tracker Agent"]
+SkillAgent --> Database["SQLite Database"]
+MarketAgent --> Database
+PathAgent --> Database
+RoadmapAgent --> Database
+ProgressAgent --> Database
 ```
 
 **Diagram sources**
-- [index.html:235](file://index.html#L235)
-- [index.html:237-280](file://index.html#L237-L280)
-- [index.html:631-657](file://index.html#L631-L657)
-- [index.html:28-33](file://index.html#L28-L33)
-- [index.html:34-36](file://index.html#L34-L36)
+- [careerCoachOrchestrator.js:22-26](file://agents/careerCoachOrchestrator.js#L22-L26)
+- [db.js:1-20](file://database/db.js#L1-L20)
 
 **Section sources**
-- [index.html:235](file://index.html#L235)
-- [index.html:237-280](file://index.html#L237-L280)
-- [index.html:631-657](file://index.html#L631-L657)
-- [index.html:28-33](file://index.html#L28-L33)
-- [index.html:34-36](file://index.html#L34-L36)
+- [careerCoachOrchestrator.js:22-26](file://agents/careerCoachOrchestrator.js#L22-L26)
+- [db.js:1-20](file://database/db.js#L1-L20)
 
 ## Performance Considerations
-- Interval cadence: 700ms provides smooth visual pacing without overwhelming the UI.
-- Minimal DOM manipulation: Only active class and status dot classes are toggled per tick.
-- No heavy computations: The pipeline is purely UI-driven; actual analysis would be simulated or integrated later.
-- Accessibility: Ensure focus states and keyboard navigation remain usable when the button is disabled.
+The multi-agent system is optimized for efficient processing:
 
-[No sources needed since this section provides general guidance]
+### Computational Efficiency
+- **Deterministic algorithms**: No random operations ensure consistent performance
+- **Database indexing**: Primary keys and foreign keys optimize query performance
+- **Memory management**: In-memory SQLite database reduces I/O overhead
+- **Batch operations**: Multiple database operations grouped for efficiency
+
+### Scalability Factors
+- **Modular architecture**: Each agent operates independently for easy scaling
+- **Database abstraction**: Clean separation between business logic and data access
+- **Stateless processing**: Agents don't maintain persistent state between calls
+- **Resource cleanup**: Proper disposal of database connections and resources
+
+### User Experience Optimization
+- **Non-blocking UI**: Visual pipeline continues during backend processing
+- **Progressive feedback**: Real-time status updates keep users informed
+- **Error handling**: Graceful degradation when data is missing or invalid
+- **Responsive design**: Adapts to various screen sizes and devices
 
 ## Troubleshooting Guide
-Common issues and resolutions:
-- Agents not animating: Verify that agent cards have the .agent-card class and status dots use .agent-status.
-- Status dots not changing colors: Confirm that runPipeline() correctly sets className for status dots to include bg-emerald-500 (completed) and bg-brand-500 animate-pulse-dot (active).
-- Button remains disabled: Check that the interval is cleared and button properties are reset after completion.
-- Incorrect sequencing: Ensure the index increment and boundary checks are correct so the last agent completes and the loop exits.
+Common issues and their solutions in the multi-agent pipeline:
 
-References:
-- Pipeline logic and state updates: [index.html:631-657](file://index.html#L631-L657)
-- Status dot classes and animations: [index.html:28-33](file://index.html#L28-L33)
-- Agent card structure: [index.html:237-280](file://index.html#L237-L280)
+### Database Issues
+- **Connection errors**: Ensure `initDatabase()` is called before any agent execution
+- **Missing data**: Verify seed script has been run to populate initial data
+- **Schema conflicts**: Check database version compatibility and migration scripts
+
+### Agent Processing Errors
+- **Skill assessment failures**: Validate input arrays contain proper skill strings
+- **Market intelligence timeouts**: Implement retry logic for database queries
+- **Career path scoring issues**: Verify student profile contains required fields
+
+### Pipeline Execution Problems
+- **Orchestrator hangs**: Check for infinite loops in agent sequencing
+- **Memory leaks**: Monitor database connection lifecycle and resource cleanup
+- **State synchronization**: Ensure frontend status matches backend processing state
+
+### Visual Interface Issues
+- **Animation glitches**: Verify CSS classes are properly applied and removed
+- **Status indicator problems**: Check DOM element references and class names
+- **Button state conflicts**: Implement proper event handling for concurrent executions
 
 **Section sources**
+- [careerCoachOrchestrator.js:226-229](file://agents/careerCoachOrchestrator.js#L226-L229)
+- [skillAssessmentAgent.js:35-47](file://agents/skillAssessmentAgent.js#L35-L47)
+- [marketIntelligenceAgent.js:82-90](file://agents/marketIntelligenceAgent.js#L82-L90)
 - [index.html:631-657](file://index.html#L631-L657)
-- [index.html:28-33](file://index.html#L28-L33)
-- [index.html:237-280](file://index.html#L237-L280)
 
 ## Conclusion
-The multi-agent pipeline visualization effectively demonstrates sequential agent processing with clear visual feedback. Through well-defined CSS classes, status indicators, and an interval-driven orchestration, it showcases how specialized agents collaborate to build a personalized career roadmap. The design balances simplicity and clarity, making complex workflows accessible to users while laying a foundation for future integration with real agent services.
-
-[No sources needed since this section summarizes without analyzing specific files]
+The fully implemented multi-agent pipeline represents a sophisticated career guidance system that combines specialized AI agents with real-time visualization and persistent data management. The system successfully demonstrates collaborative problem-solving architecture where each agent contributes unique expertise to create comprehensive career recommendations. Through deterministic algorithms, database integration, and responsive user interface, the pipeline provides actionable insights for Pakistani students navigating their career paths. The modular design ensures scalability and maintainability while the bilingual support makes the system accessible to diverse user bases. This implementation serves as a foundation for future enhancements including machine learning integration, expanded market data, and personalized recommendation engines.

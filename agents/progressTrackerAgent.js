@@ -78,21 +78,28 @@ export function toggleTaskStatus(db, studentId, taskId, status) {
   }
   const student = students[0];
 
-  // ── Verify task exists ────────────────────────────────────
-  const tasks = db.dbAll(
+  // ── Upsert task in progress_logs ──────────────────────────
+  // If no entry exists yet (e.g. a freshly generated roadmap for a student
+  // who has never run Analyze before), create one on the fly instead of
+  // erroring.  This prevents "Task not found for student N" on toggle.
+  const existing = db.dbAll(
     'SELECT * FROM progress_logs WHERE student_id = ? AND task_id = ?',
     [studentId, taskId]
   );
-  if (tasks.length === 0) {
-    return { success: false, error: `Task "${taskId}" not found for student ${studentId}.` };
-  }
 
-  // ── Update task status ────────────────────────────────────
   const completedAt = status === 'completed' ? new Date().toISOString() : null;
-  db.dbRun(
-    'UPDATE progress_logs SET status = ?, completed_at = ? WHERE student_id = ? AND task_id = ?',
-    [status, completedAt, studentId, taskId]
-  );
+
+  if (existing.length === 0) {
+    db.dbRun(
+      'INSERT INTO progress_logs (student_id, task_id, status, completed_at) VALUES (?, ?, ?, ?)',
+      [studentId, taskId, status, completedAt]
+    );
+  } else {
+    db.dbRun(
+      'UPDATE progress_logs SET status = ?, completed_at = ? WHERE student_id = ? AND task_id = ?',
+      [status, completedAt, studentId, taskId]
+    );
+  }
 
   // ── Recompute task completion ratio ───────────────────────
   const counts = db.dbAll(

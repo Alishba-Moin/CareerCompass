@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, ChevronDown, Languages, Check } from 'lucide-react';
+import { Compass, ChevronDown, Languages, Check, LogOut, UserPlus, User2, Sparkles } from 'lucide-react';
 import { useLang } from '../i18n/LanguageContext.jsx';
 
 const NAV = [
@@ -21,11 +21,10 @@ function initials(name) {
     .slice(0, 2);
 }
 
-export default function Navbar({ students, studentId, onSelectStudent }) {
+export default function Navbar({ currentUser, onLogout, onOpenAuth }) {
   const { t, lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
-  const current = students.find(s => s.id === studentId);
 
   // Close the dropdown when clicking outside
   useEffect(() => {
@@ -51,17 +50,19 @@ export default function Navbar({ students, studentId, onSelectStudent }) {
         </a>
 
         {/* Section nav */}
-        <nav className="hidden lg:flex items-center gap-1 mx-auto">
-          {NAV.map(n => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="px-3 py-1.5 text-sm text-brown-light hover:text-brown-dark hover:bg-sand rounded-lg transition-colors"
-            >
-              {t(n.key)}
-            </a>
-          ))}
-        </nav>
+        {currentUser && (
+          <nav className="hidden lg:flex items-center gap-1 mx-auto">
+            {NAV.map(n => (
+              <a
+                key={n.href}
+                href={n.href}
+                className="px-3 py-1.5 text-sm text-brown-light hover:text-brown-dark hover:bg-sand rounded-lg transition-colors"
+              >
+                {t(n.key)}
+              </a>
+            ))}
+          </nav>
+        )}
 
         <div className="flex items-center gap-2 ms-auto lg:ms-0">
           {/* Language toggle */}
@@ -90,64 +91,84 @@ export default function Navbar({ students, studentId, onSelectStudent }) {
             ))}
           </div>
 
-          {/* Student switcher */}
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setOpen(o => !o)}
-              className="flex items-center gap-2 rounded-xl border border-line bg-parchment px-2.5 py-1.5 hover:border-gold/50 transition-colors"
-            >
-              <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-brown to-brown-dark text-white text-[11px] font-bold flex items-center justify-center">
-                {initials(current?.name)}
-              </span>
-              <span className="hidden md:block text-sm font-semibold text-brownDark max-w-[140px] truncate">
-                {current?.name || t('student.select')}
-              </span>
-              <ChevronDown size={14} className={`text-brown-light transition-transform ${open ? 'rotate-180' : ''}`} />
-            </button>
+          {/* Auth area */}
+          {currentUser ? (
+            /* Logged-in user dropdown */
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setOpen(o => !o)}
+                className="flex items-center gap-2 rounded-xl border border-line bg-parchment px-2.5 py-1.5 hover:border-gold/50 transition-colors"
+              >
+                <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-brown to-brown-dark text-white text-[11px] font-bold flex items-center justify-center">
+                  {initials(currentUser.name)}
+                </span>
+                <span className="hidden md:block text-sm font-semibold text-brownDark max-w-[140px] truncate">
+                  {currentUser.name}
+                </span>
+                <ChevronDown size={14} className={`text-brown-light transition-transform ${open ? 'rotate-180' : ''}`} />
+              </button>
 
-            <AnimatePresence>
-              {open && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                  transition={{ duration: 0.16 }}
-                  className="absolute end-0 mt-2 w-64 rounded-2xl border border-line bg-parchment shadow-card-hover overflow-hidden z-50"
-                >
-                  <p className="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-mocha">
-                    {t('student.switch')}
-                  </p>
-                  {students.map(s => (
-                    <button
-                      key={s.id}
-                      onClick={() => {
-                        onSelectStudent(s.id);
-                        setOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-sand transition-colors ${
-                        s.id === studentId ? 'bg-gold/10' : ''
-                      }`}
-                    >
-                      <span
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white ${
-                          s.id === studentId ? 'bg-gradient-to-br from-gold to-brown' : 'bg-brown-light/60'
-                        }`}
-                      >
-                        {initials(s.name)}
-                      </span>
-                      <span className="flex-1 text-start">
-                        <span className="block text-sm font-semibold text-brownDark">{s.name}</span>
-                        <span className="block text-[11px] text-mocha">
-                          {t(s.education_level === 'Graduate' ? 'profile.graduate' : 'profile.intermediate')}
+              <AnimatePresence>
+                {open && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                    transition={{ duration: 0.16 }}
+                    className="absolute end-0 mt-2 w-64 rounded-2xl border border-line bg-parchment shadow-card-hover overflow-hidden z-50"
+                  >
+                    {/* User info */}
+                    <div className="px-4 pt-4 pb-3 border-b border-line">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-brown to-brown-dark text-white font-bold flex items-center justify-center text-sm">
+                          {initials(currentUser.name)}
                         </span>
-                      </span>
-                      {s.id === studentId && <Check size={15} className="text-gold-dark shrink-0" />}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-brownDark truncate">{currentUser.name}</p>
+                          <p className="text-xs text-mocha truncate">{currentUser.email}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="p-2">
+                      <button
+                        onClick={() => { setOpen(false); onOpenAuth(); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-sand transition-colors text-left"
+                      >
+                        <span className="w-8 h-8 rounded-lg bg-gold/15 flex items-center justify-center">
+                          <UserPlus size={15} className="text-gold-dark" />
+                        </span>
+                        <span className="text-sm font-semibold text-brownDark">{t('auth.newStudent')}</span>
+                      </button>
+
+                      <button
+                        onClick={() => { setOpen(false); onLogout(); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-colors text-left group"
+                      >
+                        <span className="w-8 h-8 rounded-lg bg-red-50 group-hover:bg-red-100 flex items-center justify-center">
+                          <LogOut size={15} className="text-red-500" />
+                        </span>
+                        <span className="text-sm font-semibold text-red-600">{t('auth.logout')}</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            /* Logged-out: Sign In / Register CTA */
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onOpenAuth}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#b8860b] to-[#a0522d] text-white text-sm font-bold shadow hover:opacity-90 transition-opacity"
+              >
+                <Sparkles size={14} />
+                <span className="hidden sm:inline">{t('auth.signup')} / {t('auth.login')}</span>
+                <span className="sm:hidden">Sign In</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

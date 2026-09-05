@@ -6,6 +6,7 @@ import 'dotenv/config';
 import { initDatabase } from './database/db.js';
 import { healthRouter } from './routes/health.js';
 import { apiRouter } from './routes/api.js';
+import { authRouter } from './routes/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,6 +21,7 @@ app.use(express.static(join(__dirname, 'public')));
 
 // ── API Routes ──
 app.use('/api/health', healthRouter);
+app.use('/api/auth', authRouter);
 app.use('/api', apiRouter);
 
 // ── Initialize database & start server ──

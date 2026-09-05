@@ -73,15 +73,32 @@ export async function initDatabase() {
     CREATE TABLE IF NOT EXISTS students (
       id                INTEGER PRIMARY KEY AUTOINCREMENT,
       name              TEXT NOT NULL,
+      email             TEXT UNIQUE,
+      password_hash     TEXT,
+      salt              TEXT,
       education_level   TEXT NOT NULL CHECK(education_level IN ('Intermediate','Graduate')),
       stream_or_degree  TEXT,
       interests         TEXT,
       skills            TEXT DEFAULT '[]',
+      target_role       TEXT,
       skill_match_pct   REAL DEFAULT 0,
       remote_demand_pct REAL DEFAULT 0,
-      readiness_score   INTEGER DEFAULT 0 CHECK(readiness_score BETWEEN 0 AND 100)
+      readiness_score   INTEGER DEFAULT 0 CHECK(readiness_score BETWEEN 0 AND 100),
+      created_at        DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Run lightweight migrations if upgrading existing database
+  try {
+    const studentCols = dbAll("PRAGMA table_info(students)").map(c => c.name);
+    if (!studentCols.includes('email')) db.run('ALTER TABLE students ADD COLUMN email TEXT UNIQUE');
+    if (!studentCols.includes('password_hash')) db.run('ALTER TABLE students ADD COLUMN password_hash TEXT');
+    if (!studentCols.includes('salt')) db.run('ALTER TABLE students ADD COLUMN salt TEXT');
+    if (!studentCols.includes('target_role')) db.run('ALTER TABLE students ADD COLUMN target_role TEXT');
+    if (!studentCols.includes('created_at')) db.run('ALTER TABLE students ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+  } catch (e) {
+    // Ignore if already present
+  }
 
   // ── market_signals ──
   db.run(`

@@ -137,7 +137,40 @@
   },
   "student": {
     "switch": "طالب علم بدلیں",
-    "select": "طالب علم منتخب کریں"
+    "select": "طالب علم منتخب کریں",
+    "all": "تمام طلباء"
+  },
+  "auth": {
+    "login": "لاگ ان کریں",
+    "signup": "نیا طالب علم رجسٹر کریں",
+    "logout": "لاگ آؤٹ",
+    "demo": "ڈیمو لاگ ان",
+    "email": "ای میل ایڈریس",
+    "password": "پاس ورڈ",
+    "name": "مکمل نام",
+    "step1": "1۔ اکاؤنٹ کی معلومات",
+    "step2": "2۔ تعلیم اور مہارتیں",
+    "degree": "ڈگری / تعلیمی شعبہ",
+    "degreePlaceholder": "مثلاً BS Computer Science — FAST / Pre-Engineering",
+    "interests": "دلچسپیاں اور شعبہ جات",
+    "interestsPlaceholder": "مثلاً Artificial Intelligence، ویب ڈویلپمنٹ، ڈیٹا سائنس",
+    "skills": "آپ کی موجودہ مہارتیں",
+    "skillsPlaceholder": "مہارت لکھ کر Enter دبائیں (مثلاً Python، SQL، HTML)",
+    "targetRole": "ہدف کا کیریئر کردار",
+    "noAccount": "اکاؤنٹ موجود نہیں ہے؟",
+    "haveAccount": "پہلے سے رجسٹرڈ ہیں؟",
+    "creating": "AI ایجنٹس آپ کا ذاتی روڈ میپ بنا رہے ہیں…",
+    "loggingIn": "لاگ ان ہو رہا ہے…",
+    "successLogin": "خوش آمدید، {name}!",
+    "successSignup": "اکاؤنٹ تیار ہو گیا! آپ کا 4 ہفتوں کا روڈ میپ تیار ہے۔",
+    "demoHint": "یا فوری طور پر ان طلباء کے ساتھ ٹیسٹ کریں:",
+    "demoAli": "علی خان (FAST CS گریجویٹ · AI/ML ٹریک)",
+    "demoSara": "سارہ احمد (پری انجینئرنگ · ویب ڈیو ٹریک)",
+    "newStudent": "نیا طالب علم رجسٹر کریں",
+    "continue": "تعلیم کے مرحلے پر جائیں",
+    "back": "پیچھے",
+    "finish": "میرا کیریئر روڈ میپ تیار کریں",
+    "welcomeBanner": "خاص طور پر آپ کے لیے تیار کردہ حقیقی وقت کی AI کیریئر رہنمائی۔"
   },
   "lang": {
     "label": "زبان"

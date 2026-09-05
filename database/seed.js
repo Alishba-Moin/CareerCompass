@@ -10,6 +10,12 @@ import { initDatabase, dbRun, dbAll, getDb, saveToDisk } from './db.js';
 import { unlinkSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import crypto from 'node:crypto';
+
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return { salt, hash };
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,23 +53,33 @@ async function seed() {
   //
   // Ali Khan:  25% skill match, 92% remote demand, 2/16 tasks → ratio 0.125 → score = 43
   // Sara Ahmed:  0% skill match, 84% remote demand, 0 tasks → score ≈ 25
+  const defaultPw = hashPassword('password123');
+
   const students = [
     {
       name: 'Ali Khan',
+      email: 'ali@careercompass.pk',
+      password_hash: defaultPw.hash,
+      salt: defaultPw.salt,
       education_level: 'Graduate',
       stream_or_degree: 'BS Computer Science — FAST NUCES, Islamabad',
       interests: 'AI, Machine Learning, Web Dev',
       skills: JSON.stringify(['Python', 'Basic Math', 'HTML/CSS']),
+      target_role: 'AI/ML Engineer',
       skill_match_pct: 25,
       remote_demand_pct: 92,
       readiness_score: 43,
     },
     {
       name: 'Sara Ahmed',
+      email: 'sara@careercompass.pk',
+      password_hash: defaultPw.hash,
+      salt: defaultPw.salt,
       education_level: 'Intermediate',
       stream_or_degree: 'Pre-Engineering',
       interests: 'Software Engineering, Data Science',
       skills: JSON.stringify(['Mathematics', 'Physics']),
+      target_role: 'Full Stack Web Developer',
       skill_match_pct: 0,
       remote_demand_pct: 84,
       readiness_score: 25,
@@ -72,9 +88,9 @@ async function seed() {
 
   for (const s of students) {
     dbRun(
-      `INSERT INTO students (name, education_level, stream_or_degree, interests, skills, skill_match_pct, remote_demand_pct, readiness_score)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [s.name, s.education_level, s.stream_or_degree, s.interests, s.skills, s.skill_match_pct, s.remote_demand_pct, s.readiness_score]
+      `INSERT INTO students (name, email, password_hash, salt, education_level, stream_or_degree, interests, skills, target_role, skill_match_pct, remote_demand_pct, readiness_score)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [s.name, s.email, s.password_hash, s.salt, s.education_level, s.stream_or_degree, s.interests, s.skills, s.target_role, s.skill_match_pct, s.remote_demand_pct, s.readiness_score]
     );
   }
   console.log(`  students ............. ${students.length} rows inserted`);

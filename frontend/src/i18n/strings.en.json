@@ -137,7 +137,40 @@
   },
   "student": {
     "switch": "Switch Student",
-    "select": "Select Student"
+    "select": "Select Student",
+    "all": "All Students"
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Create Student Profile",
+    "logout": "Log Out",
+    "demo": "Quick Demo Login",
+    "email": "Email Address",
+    "password": "Password",
+    "name": "Full Name",
+    "step1": "1. Account Info",
+    "step2": "2. Education & Skills",
+    "degree": "Degree / Stream",
+    "degreePlaceholder": "e.g. BS Computer Science — FAST / Pre-Engineering",
+    "interests": "Interests & Passions",
+    "interestsPlaceholder": "e.g. Artificial Intelligence, Web Development, Data Science",
+    "skills": "Your Existing Skills",
+    "skillsPlaceholder": "Type skill & press Enter (e.g. Python, SQL, HTML)",
+    "targetRole": "Primary Target Role",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already registered?",
+    "creating": "AI agents are generating your custom roadmap…",
+    "loggingIn": "Signing in…",
+    "successLogin": "Welcome back, {name}!",
+    "successSignup": "Account created! Your custom 4-week roadmap is ready.",
+    "demoHint": "Or test instantly with pre-configured personas:",
+    "demoAli": "Ali Khan (FAST CS Graduate · AI/ML Track)",
+    "demoSara": "Sara Ahmed (Pre-Engineering · Web Dev Track)",
+    "newStudent": "Register New Student",
+    "continue": "Continue to Education",
+    "back": "Back",
+    "finish": "Generate My Career Roadmap",
+    "welcomeBanner": "Real-time AI career guidance tailored specifically for you."
   },
   "lang": {
     "label": "Language"

@@ -259,7 +259,7 @@ authRouter.post('/signup', (req, res) => {
 authRouter.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || (!password && req.body.password !== '')) {
+  if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
 
@@ -272,16 +272,11 @@ authRouter.post('/login', (req, res) => {
 
   const studentRow = rows[0];
 
-  // ── Validation logic update ──
+  // If password_hash is not set (e.g. legacy demo without password), allow login with default "password123"
   let valid = false;
-  if (studentRow.password_hash === 'seeded_user') {
-    // Instant bypass for pre-configured seeded personas (Ali Khan / Sara Ahmed)
-    valid = true;
-  } else if (!studentRow.password_hash || !studentRow.salt) {
-    // Legacy demo fallback
+  if (!studentRow.password_hash || !studentRow.salt) {
     valid = password === 'password123' || password === 'admin';
   } else {
-    // Normal password verification
     valid = verifyPassword(password, studentRow.salt, studentRow.password_hash);
   }
 

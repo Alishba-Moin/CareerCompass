@@ -1,12 +1,15 @@
 import initSqlJs from 'sql.js';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const DB_PATH = join(__dirname, '..', 'career_compass.db');
+// Detect Vercel serverless environment to write to writable /tmp directory
+const IS_VERCEL = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+const DB_DIR = IS_VERCEL ? '/tmp' : join(__dirname, '..');
+const DB_PATH = join(DB_DIR, 'career_compass.db');
 
 let db = null;
 
@@ -24,9 +27,16 @@ export function getDb() {
  */
 export function saveToDisk() {
   if (db) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    writeFileSync(DB_PATH, buffer);
+    try {
+      if (!existsSync(DB_DIR)) {
+        mkdirSync(DB_DIR, { recursive: true });
+      }
+      const data = db.export();
+      const buffer = Buffer.from(data);
+      writeFileSync(DB_PATH, buffer);
+    } catch (err) {
+      console.error('Failed to save DB to disk:', err);
+    }
   }
 }
 
@@ -57,7 +67,14 @@ export function dbAll(sql, params = []) {
  * Loads existing DB from disk or creates a new one, then ensures schema exists.
  */
 export async function initDatabase() {
+  if (db) return db; // Return early if already initialized
+
   const SQL = await initSqlJs();
+
+  // Ensure target directory exists before reading/creating
+  if (!existsSync(DB_DIR)) {
+    mkdirSync(DB_DIR, { recursive: true });
+  }
 
   if (existsSync(DB_PATH)) {
     const fileBuffer = readFileSync(DB_PATH);
@@ -138,4 +155,5 @@ export async function initDatabase() {
 
   saveToDisk();
   console.log(`SQLite database initialized → ${DB_PATH}`);
+  return db;
 }

@@ -19,20 +19,36 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
 
+// ── Middleware: Ensure Database Initialized for Serverless Requests ──
+let dbInitialized = false;
+app.use(async (req, res, next) => {
+  if (!dbInitialized) {
+    try {
+      await initDatabase();
+      dbInitialized = true;
+    } catch (err) {
+      console.error('Database initialization error:', err);
+      return res.status(500).json({ error: 'Database initialization failed' });
+    }
+  }
+  next();
+});
+
 // ── API Routes ──
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api', apiRouter);
 
-// ── Initialize database & start server ──
-async function start() {
-  await initDatabase();
-  app.listen(PORT, () => {
-    console.log(`CareerCompass server running → http://localhost:${PORT}`);
+// ── Local Development Listener ──
+if (process.env.NODE_ENV !== 'production') {
+  initDatabase().then(() => {
+    app.listen(PORT, () => {
+      console.log(`CareerCompass server running → http://localhost:${PORT}`);
+    });
+  }).catch(err => {
+    console.error('Failed to start server:', err);
   });
 }
 
-start().catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+// ── Export for Vercel Serverless Function ──
+export default app;

@@ -39,21 +39,8 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api', apiRouter);
 
-<<<<<<< HEAD
-// ── Initialize database ──
-await initDatabase();
-
-// ── Start local server (skipped automatically on Vercel) ──
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`CareerCompass server running → http://localhost:${PORT}`);
-  });
-}
-
-export default app;
-=======
 // ── Local Development Listener ──
-if (process.env.NODE_ENV !== 'production') {
+if (!process.env.VERCEL && process.env.NODE_ENV !== 'production') {
   initDatabase().then(() => {
     app.listen(PORT, () => {
       console.log(`CareerCompass server running → http://localhost:${PORT}`);
@@ -65,4 +52,3 @@ if (process.env.NODE_ENV !== 'production') {
 
 // ── Export for Vercel Serverless Function ──
 export default app;
->>>>>>> 929c105ed48d0b8b396b39989749e2abacd8afd5

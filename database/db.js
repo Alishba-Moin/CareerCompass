@@ -2,6 +2,7 @@ import initSqlJs from 'sql.js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -9,6 +10,11 @@ const __dirname = dirname(__filename);
 const DB_PATH = join(__dirname, '..', 'career_compass.db');
 
 let db = null;
+
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return { salt, hash };
+}
 
 /**
  * Returns the singleton database connection.
@@ -20,13 +26,18 @@ export function getDb() {
 }
 
 /**
- * Persists the in-memory database to disk.
+ * Persists the in-memory database to disk if filesystem allows (Local Dev).
+ * Ignores write errors gracefully on Read-Only systems (Vercel).
  */
 export function saveToDisk() {
   if (db) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    writeFileSync(DB_PATH, buffer);
+    try {
+      const data = db.export();
+      const buffer = Buffer.from(data);
+      writeFileSync(DB_PATH, buffer);
+    } catch (e) {
+      // Ignored on read-only serverless platforms like Vercel
+    }
   }
 }
 
@@ -53,16 +64,87 @@ export function dbAll(sql, params = []) {
 }
 
 /**
+ * Auto-seeds demo data if database tables are empty (Required for Vercel Serverless startup).
+ */
+function seedIfEmpty() {
+  const countRes = dbAll('SELECT COUNT(*) as count FROM students');
+  if (countRes[0] && countRes[0].count > 0) return;
+
+  console.log('Seeding initial demo data into SQLite...');
+  const defaultPw = hashPassword('password123');
+
+  // Seed Students
+  const students = [
+    {
+      name: 'Ali Khan',
+      email: 'ali@careercompass.pk',
+      password_hash: defaultPw.hash,
+      salt: defaultPw.salt,
+      education_level: 'Graduate',
+      stream_or_degree: 'BS Computer Science — FAST NUCES, Islamabad',
+      interests: 'AI, Machine Learning, Web Dev',
+      skills: JSON.stringify(['Python', 'Basic Math', 'HTML/CSS']),
+      target_role: 'AI/ML Engineer',
+      skill_match_pct: 25,
+      remote_demand_pct: 92,
+      readiness_score: 43,
+    },
+    {
+      name: 'Sara Ahmed',
+      email: 'sara@careercompass.pk',
+      password_hash: defaultPw.hash,
+      salt: defaultPw.salt,
+      education_level: 'Intermediate',
+      stream_or_degree: 'Pre-Engineering',
+      interests: 'Software Engineering, Data Science',
+      skills: JSON.stringify(['Mathematics', 'Physics']),
+      target_role: 'Full Stack Web Developer',
+      skill_match_pct: 0,
+      remote_demand_pct: 84,
+      readiness_score: 25,
+    },
+  ];
+
+  for (const s of students) {
+    db.run(
+      `INSERT INTO students (name, email, password_hash, salt, education_level, stream_or_degree, interests, skills, target_role, skill_match_pct, remote_demand_pct, readiness_score)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [s.name, s.email, s.password_hash, s.salt, s.education_level, s.stream_or_degree, s.interests, s.skills, s.target_role, s.skill_match_pct, s.remote_demand_pct, s.readiness_score]
+    );
+  }
+
+  // Seed Market Signals
+  const marketSignals = [
+    { role_title: 'AI/ML Engineer', domain: 'Data & AI', local_demand: 78, remote_demand: 92, required_skills: JSON.stringify(['Python', 'Pandas', 'Scikit-Learn', 'PyTorch']), growth_trend: 'High Growth' },
+    { role_title: 'Full Stack Web Developer', domain: 'Web', local_demand: 85, remote_demand: 88, required_skills: JSON.stringify(['JavaScript', 'React', 'Node.js', 'SQL']), growth_trend: 'Stable High' },
+    { role_title: 'Data Analyst', domain: 'Data', local_demand: 80, remote_demand: 84, required_skills: JSON.stringify(['Python', 'SQL', 'Excel', 'PowerBI']), growth_trend: 'Growing' },
+  ];
+
+  for (const m of marketSignals) {
+    db.run(
+      `INSERT INTO market_signals (role_title, domain, local_demand, remote_demand, required_skills, growth_trend)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [m.role_title, m.domain, m.local_demand, m.remote_demand, m.required_skills, m.growth_trend]
+    );
+  }
+}
+
+/**
  * Initializes the database.
- * Loads existing DB from disk or creates a new one, then ensures schema exists.
+ * Loads existing DB from disk or falls back to in-memory, creates schema, and seeds default data.
  */
 export async function initDatabase() {
   const SQL = await initSqlJs();
 
-  if (existsSync(DB_PATH)) {
-    const fileBuffer = readFileSync(DB_PATH);
-    db = new SQL.Database(fileBuffer);
-  } else {
+  try {
+    if (existsSync(DB_PATH)) {
+      const fileBuffer = readFileSync(DB_PATH);
+      db = new SQL.Database(fileBuffer);
+    } else {
+      db = new SQL.Database();
+    }
+  } catch (err) {
+    // Fallback to in-memory DB on Vercel
     db = new SQL.Database();
   }
 
@@ -136,6 +218,9 @@ export async function initDatabase() {
     )
   `);
 
+  // Automatically seed users if operating in-memory on Vercel
+  seedIfEmpty();
+
   saveToDisk();
-  console.log(`SQLite database initialized → ${DB_PATH}`);
+  console.log(`SQLite database initialized successfully`);
 }

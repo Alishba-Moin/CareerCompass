@@ -24,15 +24,14 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api', apiRouter);
 
-// ── Initialize database & start server ──
-async function start() {
-  await initDatabase();
+// ── Initialize database ──
+await initDatabase();
+
+// ── Start local server (skipped automatically on Vercel) ──
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`CareerCompass server running → http://localhost:${PORT}`);
   });
 }
 
-start().catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+export default app;

@@ -129,18 +129,6 @@ export async function initDatabase() {
       )
     `);
 
-    // ── Auto-Seed Default Test Personas if Database is Fresh ──
-    const studentCount = dbAll('SELECT COUNT(*) as count FROM students');
-    if (studentCount[0]?.count === 0) {
-      db.run(`
-        INSERT INTO students (name, email, password_hash, education_level, stream_or_degree, interests, skills, target_role, skill_match_pct, remote_demand_pct, readiness_score)
-        VALUES 
-        ('Ali Khan', 'ali@example.com', 'seeded_user', 'Graduate', 'Computer Science', 'Artificial Intelligence, Machine Learning', '["Python", "C++", "Data Structures"]', 'AI Engineer', 75, 85, 78),
-        ('Sara Ahmed', 'sara@example.com', 'seeded_user', 'Intermediate', 'Pre-Engineering', 'Web Development, Frontend Design', '["HTML", "CSS", "JavaScript"]', 'Frontend Developer', 60, 80, 68)
-      `);
-      console.log('Seeded initial student personas successfully.');
-    }
-
     saveToDisk();
     console.log(`SQLite database initialized → ${DB_PATH}`);
     return db;

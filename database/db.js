@@ -74,7 +74,7 @@ function seedIfEmpty() {
     if (countRes[0] && countRes[0].count > 0) return;
 
     console.log('Seeding initial demo data into SQLite...');
-    
+
     // Default fixed password for testing: "password123"
     const defaultPw = hashPassword('password123');
 
